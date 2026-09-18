@@ -1,114 +1,162 @@
 # AMH Solutions — Landing de "My Business Panel"
 
-Brief de proyecto para retomar el desarrollo. La fase de diseño (en Stitch) ya está hecha;
-esto es la guía para construir el sitio en código con acabado profesional.
+Landing de **AMH Solutions** para promocionar **My Business Panel**, un panel de
+gestión empresarial todo-en-uno (CRM, inventario y finanzas). Público: empresas que
+buscan centralizar la gestión de su negocio. Todo el texto va en **español**.
 
----
+## Arrancar
 
-## 1. Qué estamos construyendo
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # comprueba que compila
+```
 
-Landing page de **AMH Solutions** para promocionar **My Business Panel**, un panel de
-gestión empresarial todo-en-uno (CRM, inventario y finanzas). Público: empresas que buscan
-centralizar la gestión de su negocio.
+## Stack
 
-## 2. Hasta dónde queremos llegar (objetivo)
+**React 19 + Vite + Tailwind v4 + React Router.**
 
-Calidad y pulido a la altura de **Airtek Venezuela (airtek.com.ve)**: moderno, confiable,
-limpio, con jerarquía visual fuerte y **movimiento real**. El diseño base de Stitch nos
-deja en ~80%; el objetivo es el 20% premium que solo se logra en código (animaciones,
-asimetría fina, sombras en capas, interactividad). NO copiar el código exportado de Stitch:
-usar el diseño solo como referencia visual y reconstruir limpio.
+⚠️ **Tailwind v4 no usa `tailwind.config.js`.** Los tokens de marca viven en el
+bloque `@theme` de `src/index.css`. Si buscas un color y no encuentras el config,
+es por eso. Se usan igual en el JSX: `bg-navy`, `text-sky`, `border-mist`…
 
-## 3. Stack
+La tipografía es **Inter variable autohospedada**, del paquete
+`@fontsource-variable/inter`. No se carga nada de Google Fonts: un solo archivo
+cubre los pesos 100–900, sin petición a terceros ni parpadeo al cargar.
 
-- **React + Tailwind CSS**.
-- Paleta **tokenizada** en `tailwind.config` (ver abajo), no hex sueltos en el JSX.
-- Componentes limpios y reutilizables. Código mantenible (luego se conectará un backend Node.js).
-- Mobile-first, responsive. Todo el texto en **español**.
+## Hasta dónde queremos llegar
 
-## 4. Paleta (tokenizar tal cual)
+Calidad y pulido a la altura de **Airtek Venezuela (airtek.com.ve)**, con la
+estética del proyecto hermano **nido** (`C:\Users\Samuel\Desktop\nido`): lienzo
+gris, secciones como tarjetas redondeadas, cristal esmerilado y sombras suaves.
+
+⚠️ De nido copiamos la **estética**, no el **método**. nido posiciona todo en
+absoluto sobre un `aspect-ratio` fijo porque nació de un Figma medido al píxel.
+Aquí no hay ese Figma: se trabaja con flujo normal (flex/grid + contenedor
+centrado), que es mantenible a mano.
+
+## Paleta (tokens en `src/index.css`)
 
 | Token | Hex | Uso |
 |---|---|---|
-| `ink` (navy-900) | `#16273F` | secciones oscuras profundas, footer |
-| `navy` (navy-700, PRIMARIO) | `#243B61` | botones, fondos oscuros, headers |
-| `steel-navy` (navy-500) | `#355080` | apoyos, degradados |
-| `slate-blue` (navy-300) | `#6E84A8` | apoyos |
-| `sky` (sky-500, ACENTO) | `#4F93D1` | enlaces, eyebrows, íconos, énfasis |
-| `sky-light` (sky-400) | `#6BA9DD` | hover/variantes |
-| `sky-tint` (sky-100) | `#E8F1FA` | fondos suaves de sección, badges |
-| `cloud` | `#F5F8FC` | fondo de sección claro |
+| `ink` | `#16273F` | footer, fondos más oscuros |
+| `navy` (PRIMARIO) | `#243B61` | botones, fondos oscuros |
+| `steel-navy` | `#355080` | apoyos, hover del primario |
+| `slate-blue` | `#6E84A8` | apoyos |
+| `sky` (ACENTO) | `#4F93D1` | enlaces, eyebrows, iconos |
+| `sky-light` | `#6BA9DD` | hover y acento sobre oscuro |
+| `sky-tint` | `#E8F1FA` | fondo suave de sección, badges |
+| `shell` | `#F0F0F0` | **el lienzo**: fondo del `body` |
+| `cloud` | `#F5F8FC` | fondos de tarjeta interiores, campos |
 | `mist` | `#DCE4EF` | bordes |
 | `steel` | `#707D90` | texto secundario / etiquetas |
 | `body` | `#3A4658` | texto de cuerpo |
-| `white` | `#FFFFFF` | base |
-| títulos | `#000000` | **todos los H2/titulares van en NEGRO** |
+| títulos | `#000000` | **todos los H2 van en NEGRO** |
 
-El azul cielo de acento luce mejor sobre navy; sobre blanco usarlo en bold o ≥16px.
+El lienzo es **gris, no blanco**: es lo que hace que las secciones blancas se lean
+como tarjetas y que sus esquinas redondeadas se vean.
 
-## 5. Reglas de tipografía (estrictas, dan el look profesional)
+## Reglas de tipografía (estrictas, dan el look)
 
-- Sans-serif moderna y geométrica (Inter / Poppins).
-- **Titular del hero**: blanco `#FFFFFF`, peso black, ~64px desktop, line-height 1.05, alineado a la izquierda.
-- **Todos los H2 de sección**: color **NEGRO `#000000`**, extrabold, grandes (~40px),
-  **alineados a la IZQUIERDA**, nunca centrados ni en gris. Estilo "Internet para ganar" de Airtek.
-- Encima de cada H2, una **eyebrow**: etiqueta pequeña en MAYÚSCULAS, azul `#4F93D1`, con letter-spacing.
-- Cuerpo en `#3A4658`; secundarios/etiquetas en `#707D90`.
-- El azul de acento NO se usa en títulos, solo en eyebrows, enlaces e íconos.
+- **Titular del hero**: blanco, peso black, ~64px, `line-height` 1.03, a la izquierda.
+- **Todos los H2 de sección**: **NEGRO**, extrabold, ~40px, **alineados a la
+  IZQUIERDA**. Nunca centrados, nunca en gris, nunca en el azul de acento.
+  La única excepción deliberada es la sección de contacto, que va centrada
+  precisamente por ser la excepción.
+- Encima de cada H2, una **eyebrow**: MAYÚSCULAS pequeñas, azul, con letter-spacing.
+- El azul de acento NO se usa en títulos, solo en eyebrows, enlaces e iconos.
+- Estas reglas están encapsuladas en `<Titulo>` y `<Eyebrow>` (`src/components/ui.jsx`).
+  Úsalos en vez de escribir el `<h2>` a mano y no hay forma de romperlas.
 
-## 6. Estructura de la página (de arriba a abajo)
+## Estructura
 
-1. **Header** fijo, fondo blanco: logo AMH Solutions (izq) · menú (Inicio, Producto, Planes, Contacto) · "Iniciar sesión" + botón navy "Solicitar demo" (der).
-2. **Hero**: fondo navy degradado `#243B61 → #16273F`. Badge "NUEVO: Panel de Negocios v3.0", titular grande blanco "Soluciones construidas para durar", subtítulo, botón primario azul "Empezar ahora" + secundario outline "Ver demo interactiva". Mockup del dashboard a la derecha, que **se salga ligeramente del borde (overflow) y un poco rotado**.
-3. **Banda de prueba social** (debajo del hero): 3–4 métricas en fila ("+500 empresas", "99.9% disponibilidad", "Soporte 24/7", "Datos cifrados") con el dato en bold negro y descripción en gris; debajo, fila de logos de clientes en gris.
-4. **"Conoce nuestro sistema"** — carrusel (ver §7). Fondo blanco.
-5. **"Descarga tu demo"** — fondo tinte `#E8F1FA`, H2 a la izquierda, botón navy "Descargar ahora".
-6. **"Planes flexibles para cada etapa"** — 3 tarjetas (Emprendedor $29, Profesional $79 "MÁS POPULAR" destacada con borde azul, Corporativo $189). Fondo blanco.
-7. **"¿Tienes preguntas?"** — formulario de contacto (Nombre, Empresa, Correo, Mensaje) + botón "Enviar mensaje".
-8. **Footer** navy `#16273F`: logo, columnas (Empresa, Soporte), newsletter, redes, línea legal.
+**Home (`/`)** — el orden vive en `src/pages/Home.jsx`:
 
-Alternar fondos para dar ritmo (navy → blanco → tinte → blanco → navy) y variar el padding vertical entre secciones.
+1. **Hero** — video aéreo a sangre, velo navy, titular a la izquierda y la banda de
+   métricas dentro del propio hero.
+2. **Nosotros** — quiénes somos, antes de decir qué vendemos. Rejilla asimétrica 5/7.
+3. **Servicios** — los cuatro módulos en rejilla 2x2, sobre fondo tinte.
+4. **Contacto** — solo la invitación. El formulario está en el modal.
+5. **Footer** — común a todas las páginas, lo pone `App.jsx`.
 
-## 7. Carrusel "Conoce nuestro sistema" (requisito funcional)
+**Producto y planes (`/producto`)** — `src/pages/Producto.jsx`. El producto y los
+**precios NO están en la home**: viven aquí, enlazados desde el navbar y el footer.
 
-Tarjeta grande blanca, esquinas 24px, sombra suave. Dos columnas:
-- **Izquierda (~45%)**: mockup de pantalla del sistema en marco de navegador, sobre fondo navy degradado redondeado.
-- **Derecha (~55%)**: eyebrow azul · titular **negro bold** · párrafo · 2 viñetas con ícono azul.
+Ritmo de fondos: oscuro → blanco → tinte → navy → ink. La página se va oscureciendo
+hacia el final, que es lo que cierra el recorrido.
 
-**Interacción clave**: flechas circulares a cada lado; al hacer clic **cambian foto Y texto a la vez** (slide completo). Debajo, 3 puntos de paginación (activo = pastilla azul). Animar la transición entre slides (fade/slide suave).
+## El contacto es un modal, no una sección
 
-Contenido de los 3 slides:
+Es el requisito que más define la página: hay un **botón pequeño** y al pulsarlo la
+pantalla se **cristaliza** (`backdrop-blur` + velo ink) y aparece una tarjeta
+centrada para hablar con soporte.
 
-**Slide 1 — eyebrow "CRECIMIENTO ACELERADO"**
-- Titular: "CRM: Domina tu Embudo de Ventas"
-- Párrafo: "No pierdas ni una sola oportunidad. Nuestro CRM inteligente centraliza cada interacción, permitiéndote cerrar tratos más rápido y fidelizar clientes con un servicio personalizado de clase mundial."
-- Viñetas: "Visión 360° de cada cliente y prospecto." · "Automatización de tareas para tu equipo comercial."
-- Imagen: dashboard CRM (tabla de clientes + panel de actividad).
+Está montado como **contexto** (`ProveedorContacto` en `src/components/Contacto.jsx`)
+porque lo abren varios sitios a la vez — navbar, hero, la llamada de la home, el
+footer y cada tarjeta de plan — y todos tienen que compartir el mismo modal.
+Duplicarlo daría varios diálogos superpuestos.
 
-**Slide 2 — eyebrow "EFICIENCIA OPERATIVA"**
-- Titular: "Inventario: Control Total en Tiempo Real"
-- Párrafo: "Elimina el caos de tus almacenes. Gestiona miles de SKUs en múltiples ubicaciones con precisión quirúrgica, asegurando que nunca te quedes sin stock ni pierdas dinero en exceso de mercancía."
-- Viñetas: "Trazabilidad completa desde la compra hasta la venta." · "Predicción de demanda basada en inteligencia de datos."
-- Imagen: gestión de inventario (gráfica de líneas + dona).
+Para abrirlo desde cualquier componente: `const { abrir } = useContacto()`.
 
-**Slide 3 — eyebrow "CLARIDAD FINANCIERA"**
-- Titular: "Finanzas: Decisiones Basadas en Rentabilidad"
-- Párrafo: "Transforma tus números en estrategia. Obtén una radiografía instantánea de la salud financiera de tu negocio con reportes automáticos que te dicen exactamente dónde estás ganando y dónde puedes optimizar."
-- Viñetas: "Dashboards interactivos de ingresos y egresos." · "Cierre de mes en minutos, no en días."
-- Imagen: dashboard financiero (gráfica de área + tarjetas de métricas).
+El modal ya trae Escape, bloqueo del desplazamiento del fondo, trampa de foco y
+devolución del foco al cerrar. **Si lo tocas, no quites nada de eso.**
 
-## 8. El "20% premium" — qué meter en código (esto es lo que iguala a Airtek)
+## El video del hero
 
-- **Scroll reveal**: secciones aparecen con fade-up al entrar en viewport.
-- **Hover**: tarjetas se levantan ligeramente (translateY + sombra), botones con transición.
-- **Carrusel funcional** con transición suave entre slides.
-- **Asimetría fina**: mockup del hero con overflow/rotación; columnas de ancho desigual (60/40).
-- **Sombras en capas** y direccionales (sutiles, con tinte navy); sombra fuerte solo en el elemento destacado (tarjeta "Más popular", mockup del hero).
-- **Ritmo de fondos** alternados y espaciado vertical variable.
-- **Assets reales**: capturas/mockups propios de My Business Panel con la paleta navy/azul (no genéricos).
+Está en `public/video/`. El original de 48,9 MB **no está en el repo**: quedó en
+`Desktop\mbp2026\_originales\`.
 
-## 9. Notas
+| Archivo | Peso | Para |
+|---|---|---|
+| `hero-1920.mp4` | 4,6 MB | escritorio (`min-width: 768px`) |
+| `hero-1280.mp4` | 1,75 MB | móvil |
+| `hero-poster.webp` | 0,15 MB | primer fotograma mientras carga |
 
-- Accesibilidad básica: contraste suficiente, foco visible, alt en imágenes, navegación por teclado en el carrusel.
-- Performance: lazy-load de imágenes pesadas.
-- Preparar para conectar luego un backend (Node.js): mantener datos de planes/slides en estructuras/arrays, no hardcodeados en el markup.
+- Va **mudo y sin pista de audio**: es requisito del navegador para autorreproducir.
+- `playsInline` es **obligatorio** en iOS; sin él Safari se lo lleva a pantalla completa.
+- El clip lleva un **fundido cruzado de 1 s codificado dentro**, así que el `loop`
+  no da salto. Si lo vuelves a codificar desde el original, mantenlo.
+- Probado VP9/WebM: sale **más grande** que H.264 con este material (mucho
+  movimiento de dron). No lo reintentes.
+
+## Dónde está cada cosa
+
+```
+src/index.css                      Tokens (@theme), fuente, reveal, keyframes
+src/App.jsx                        Rutas, layout común, scroll al navegar
+src/data/contenido.js              TODO el contenido: métricas, pilares,
+                                   servicios, planes, navegación
+src/components/ui.jsx              Seccion, Contenedor, Eyebrow, Titulo,
+                                   Entradilla, Boton, Tarjeta
+src/components/Contacto.jsx        El contexto, el botón y el modal
+src/components/Navbar.jsx          Barra fija; transparente sobre el hero
+src/components/Reveal.jsx          Scroll reveal (fade-up al entrar en pantalla)
+src/components/Iconos.jsx          SVG en línea (no hay tipografía de iconos)
+src/pages/Home.jsx                 El ORDEN de las secciones de la home
+src/pages/Producto.jsx             Producto + planes
+src/sections/                      Hero, Nosotros, Servicios,
+                                   LlamadaContacto, SiteFooter
+_referencia/index-stitch.html      El HTML original de Stitch, solo de consulta
+```
+
+## El "20% premium" — lo que iguala a Airtek
+
+- **Scroll reveal**: envuelve en `<Reveal>`, y `retraso` escalona los hijos de una
+  rejilla para que no aparezcan todos de golpe.
+- **Hover**: tarjetas y botones se levantan (`-translate-y`) y su sombra crece.
+- **Sombras en capas** con tinte navy: `--shadow-card`, `--shadow-lift`,
+  `--shadow-destacado`. La fuerte se usa **solo** en el elemento destacado
+  (la tarjeta "Más popular"), o deja de destacar.
+- **Asimetría fina**: columnas desiguales (5/7 en Nosotros), nunca 50/50.
+- **Ritmo**: alternar fondos y variar el padding vertical entre secciones.
+
+## Convenciones
+
+- **Comentarios en español**, explicando el *por qué*, no el *qué*.
+- Los colores salen siempre del `@theme`. **No metas hexadecimales sueltos** en los
+  componentes.
+- El contenido va en `src/data/contenido.js`, no en el markup: el día que exista el
+  backend Node.js se sustituye por la respuesta de la API sin tocar los componentes.
+- Mobile-first: las clases sin prefijo son móvil, `lg:` aplica desde 1024px.
+- Accesibilidad: contraste suficiente, foco visible (ya está en `index.css`), `alt`
+  en imágenes, y `prefers-reduced-motion` respetado.
