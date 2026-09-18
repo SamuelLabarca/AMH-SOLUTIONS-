@@ -17,9 +17,17 @@ export default function Producto() {
     <>
       {/* ---------------- CABECERA ----------------
           Navy en lugar del video del hero: esta página no compite con la
-          home, la continúa. Va a sangre porque es lo primero de la
-          página y una tarjeta flotando bajo la barra se ve suelta. */}
-      <Seccion tono="navy" bleed className="pt-32 sm:pt-36">
+          home, la continúa.
+
+          Se comporta como el hero: tarjeta redondeada con su margen de
+          lienzo, y en móvil solo redondeada por abajo, porque arriba va
+          pegada al borde de la ventana detrás de la barra. */}
+      <Seccion
+        tono="navy"
+        bleed
+        className="rounded-b-[var(--radius-seccion)] pt-32 sm:mx-[var(--margen-lienzo)]
+                   sm:mt-[var(--margen-lienzo)] sm:rounded-[var(--radius-seccion)] sm:pt-36"
+      >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute right-0 top-0 h-[520px] w-[720px] translate-x-1/3 -translate-y-1/3 rounded-full bg-sky/20 blur-[130px]"
@@ -41,7 +49,7 @@ export default function Producto() {
           Los mismos datos que en la home, pero en formato lista compacta:
           quien está en esta página ya vio las tarjetas grandes y lo que
           busca ahora es el detalle. */}
-      <Seccion tono="blanco" className="mt-3 sm:mt-4">
+      <Seccion tono="blanco">
         <Contenedor className="py-20 sm:py-24">
           <Reveal>
             <Eyebrow>Módulos incluidos</Eyebrow>
@@ -68,7 +76,7 @@ export default function Producto() {
       </Seccion>
 
       {/* ---------------- PLANES ---------------- */}
-      <Seccion id="planes" tono="tinte" className="mt-3 sm:mt-4">
+      <Seccion id="planes" tono="tinte">
         <Contenedor className="py-20 sm:py-24 lg:py-28">
           <Reveal>
             <Eyebrow>Precios</Eyebrow>
@@ -98,7 +106,7 @@ export default function Producto() {
       </Seccion>
 
       {/* ---------------- CIERRE ---------------- */}
-      <Seccion tono="navy" className="mt-3 sm:mt-4">
+      <Seccion tono="navy">
         <Contenedor className="py-16 text-center sm:py-20">
           <Reveal className="mx-auto flex max-w-[46ch] flex-col items-center">
             <Titulo claro className="text-center">

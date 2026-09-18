@@ -25,7 +25,20 @@ export default function Hero() {
   const { abrir } = useContacto();
 
   return (
-    <section className="relative isolate flex min-h-[92vh] items-end overflow-hidden bg-ink">
+    /* ---------------- LA TARJETA ----------------
+       El hero NO va a sangre: es una tarjeta redondeada sobre el lienzo
+       gris, igual que el resto de secciones y que el hero de nido. Ese
+       marco gris alrededor del video es justo lo que da el carácter.
+
+       En móvil solo se redondea por ABAJO: arriba queda pegado al borde
+       de la ventana, detrás de la barra, y una curva superior dejaría dos
+       esquinas grises flotando sobre la nada. */
+    <section
+      className="relative isolate flex min-h-[86vh] items-end overflow-hidden bg-ink
+                 rounded-b-[var(--radius-seccion)]
+                 sm:mx-[var(--margen-lienzo)] sm:mt-[var(--margen-lienzo)]
+                 sm:rounded-[var(--radius-seccion)]"
+    >
       {/* ---------------- VIDEO ---------------- */}
       <video
         className="absolute inset-0 -z-20 h-full w-full object-cover"

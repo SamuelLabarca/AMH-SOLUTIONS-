@@ -15,7 +15,7 @@ import { ICONOS } from "../components/Iconos.jsx";
 ================================================================== */
 export default function Nosotros() {
   return (
-    <Seccion id="nosotros" tono="blanco" className="mt-3 sm:mt-4">
+    <Seccion id="nosotros" tono="blanco">
       <Contenedor className="py-20 sm:py-24 lg:py-32">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           {/* ---------------- COLUMNA DE TEXTO ---------------- */}

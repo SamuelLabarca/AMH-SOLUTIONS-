@@ -20,7 +20,17 @@ export default function App() {
     <ProveedorContacto>
       <AlCambiarDeRuta />
       <Navbar />
-      <main>
+      {/* EL RITMO DE LA PÁGINA VIVE AQUÍ.
+
+          Las secciones son tarjetas sobre el lienzo gris y la separación
+          entre ellas la da este `gap`, con el MISMO valor que el margen
+          lateral de cada tarjeta (`--margen-lienzo`). Así el gris que se
+          ve entre dos secciones mide lo mismo que el de los costados y
+          la rejilla se lee como una sola pieza.
+
+          ⚠️ Si una sección se pone su propio margen superior, rompe esto.
+          No lo hagas: cámbialo aquí. */}
+      <main className="flex flex-col gap-[var(--margen-lienzo)]">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/producto" element={<Producto />} />

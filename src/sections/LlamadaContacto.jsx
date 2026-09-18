@@ -15,7 +15,7 @@ import { BotonContacto } from "../components/Contacto.jsx";
 ================================================================== */
 export default function LlamadaContacto() {
   return (
-    <Seccion id="contacto" tono="navy" className="mt-3 sm:mt-4">
+    <Seccion id="contacto" tono="navy">
       {/* Resplandor azul detrás del contenido. Un navy plano a este tamaño
           se ve muerto; el foco radial le da profundidad sin añadir
           ningún elemento que distraiga. */}

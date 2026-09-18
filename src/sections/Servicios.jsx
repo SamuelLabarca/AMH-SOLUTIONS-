@@ -16,7 +16,7 @@ import { ICONOS, IconCheck, IconFlecha } from "../components/Iconos.jsx";
 ================================================================== */
 export default function Servicios() {
   return (
-    <Seccion id="servicios" tono="tinte" className="mt-3 sm:mt-4">
+    <Seccion id="servicios" tono="tinte">
       <Contenedor className="py-20 sm:py-24 lg:py-28">
         {/* ---------------- CABECERA ----------------
             Titular a la izquierda y el enlace al producto a la derecha,

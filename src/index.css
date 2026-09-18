@@ -1,8 +1,22 @@
-/* Inter variable, autohospedada (viene del paquete, no de Google Fonts):
-   un solo archivo cubre los pesos 100–900 y no hay petición a terceros ni
-   parpadeo de fuente al cargar. */
-@import "@fontsource-variable/inter";
 @import "tailwindcss";
+
+/* Urbanist variable, autohospedada (la misma que nido). Un único archivo
+   de 37 KB cubre del peso 100 al 900 y no hay petición a Google Fonts.
+
+   ⚠️ El rango en `font-weight` es lo que le dice al navegador que
+   interpole. Si pusieras aquí un peso fijo, los demás saldrían
+   sintetizados por software y se notaría sobre todo en el titular del
+   hero, que va en black.
+
+   ⚠️ Va DESPUÉS del @import a propósito: en CSS los @import tienen que
+   ser lo primero del archivo o el navegador los descarta. */
+@font-face {
+  font-family: "Urbanist";
+  src: url("/fonts/Urbanist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* ------------------------------------------------------------------
    TOKENS DE MARCA — AMH Solutions (CLAUDE.md §4)
@@ -26,10 +40,21 @@
   --color-sky-tint: #e8f1fa;
 
   /* --- Los neutros. --- */
+  /* Pastilla del enlace activo del menú y de los badges claros. Es el
+     equivalente al ámbar de nido: un tono propio, más saturado que
+     `sky-tint`, porque sobre la pastilla gris del menú el tinte se
+     confundía con el fondo y el activo no se distinguía. */
+  --color-sky-pill: #cfe3f7;
+
+  /* --- Los neutros. --- */
   /* Lienzo de la página. Gris, no blanco: es lo que hace que las
      secciones-tarjeta blancas se lean como tarjetas y que sus esquinas
      redondeadas se vean. Tomado de la estética de nido. */
   --color-shell: #f0f0f0;
+  /* Blanco roto: pastilla del menú y campos de formulario. En nido es el
+     `smoke` #F5F5F5; aquí lleva una gota de azul para que case con la
+     paleta. */
+  --color-smoke: #f5f7fa;
   --color-cloud: #f5f8fc;
   /* Bordes. */
   --color-mist: #dce4ef;
@@ -38,11 +63,15 @@
   /* Texto de cuerpo. */
   --color-body: #3a4658;
 
-  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Urbanist", ui-sans-serif, system-ui, sans-serif;
 
-  /* Radio de las secciones-tarjeta. Un único valor para que todas las
-     curvas de la página sean la misma curva. */
+  /* Radio de las secciones-tarjeta: 32px, el de nido. Un único valor para
+     que TODAS las curvas de la página sean la misma curva — hero, footer
+     y secciones incluidos. Si cambia, cambia aquí. */
   --radius-seccion: 2rem;
+  /* El margen de lienzo gris que rodea cada tarjeta. También único: es lo
+     que alinea verticalmente los bordes de todas las secciones. */
+  --margen-lienzo: 0.75rem;
 
   /* Sombras en capas y con tinte navy (CLAUDE.md §8): una sombra de
      contacto corta y otra ambiental larga. El gris puro se ve sucio. */

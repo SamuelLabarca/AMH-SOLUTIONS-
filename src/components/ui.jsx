@@ -9,12 +9,17 @@ import { Link } from "react-router-dom";
 ------------------------------------------------------------------ */
 
 /* ---------------- SECCIÓN ----------------
-   Cada sección es una TARJETA redondeada sobre el lienzo gris, con
-   márgenes laterales. Es lo que da el aire de la estética de nido: el
-   gris de alrededor es lo que hace visible la curva de la esquina.
+   Cada sección es una TARJETA redondeada sobre el lienzo gris, con el
+   mismo margen lateral y el mismo radio que todas las demás. Es la pieza
+   que define la estética de nido: el gris que rodea la tarjeta es lo que
+   hace visible la curva de la esquina.
 
-   `tono` decide el fondo. `bleed` la deja a sangre (sin márgenes ni
-   radio), que es lo que necesita el hero. */
+   ⚠️ La SEPARACIÓN entre secciones NO se pone aquí ni en cada sección:
+   la da el `gap` del <main> en App.jsx, para que margen lateral y hueco
+   vertical sean el mismo valor y los bordes de todas las tarjetas queden
+   alineados. Si una sección se pone su propio `mt`, se descuadra.
+
+   `tono` decide el fondo. `bleed` la deja a sangre, sin margen ni radio. */
 const TONOS = {
   blanco: "bg-white",
   tinte: "bg-sky-tint",
@@ -35,7 +40,11 @@ export function Seccion({
       id={id}
       className={`
         relative overflow-hidden ${TONOS[tono]}
-        ${bleed ? "" : "mx-3 rounded-[var(--radius-seccion)] sm:mx-4 lg:mx-6"}
+        ${
+          bleed
+            ? ""
+            : "mx-[var(--margen-lienzo)] rounded-[var(--radius-seccion)]"
+        }
         ${className}
       `}
       {...props}

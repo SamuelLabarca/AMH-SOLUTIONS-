@@ -4,57 +4,80 @@ import { NAVEGACION } from "../data/contenido.js";
 import { useContacto } from "./Contacto.jsx";
 import { IconMenu, IconCerrar } from "./Iconos.jsx";
 
-/* ------------------------------------------------------------------
-   BARRA DE NAVEGACIÓN
+/* ==================================================================
+   BARRA DE NAVEGACIÓN  (patrón de nido)
 
-   Fija arriba. Arranca transparente sobre el hero (que es oscuro) y al
-   desplazarse se vuelve una pastilla blanca esmerilada.
+   Tres zonas en escritorio: logo a la izquierda, el menú dentro de una
+   PASTILLA centrada, y los botones a la derecha.
 
-   Ese cambio no es decorativo: sobre el video del hero una barra blanca
-   taparía la imagen, y más abajo, sobre el lienzo gris, una barra
-   transparente dejaría el texto ilegible. Cada fondo pide una cosa.
------------------------------------------------------------------- */
+   La pastilla es la clave del look: no es una barra de ancho completo
+   con enlaces sueltos, es una cápsula gris clara con sombra suave que
+   flota sobre el fondo, y el enlace activo lleva su PROPIA pastilla
+   dentro. Eso es lo que hace que se lea como nido y no como un navbar
+   corporativo cualquiera.
+
+   Se resuelve con `grid-cols-[1fr_auto_1fr]` y no con flex: así la
+   cápsula queda centrada respecto a la VENTANA, no respecto al espacio
+   que dejan logo y botones. Con flex se descentraría en cuanto el logo y
+   los botones midan distinto, que es siempre.
+
+   Sobre el hero la barra va transparente (el hero es oscuro); al
+   desplazarse se vuelve sólida y esmerilada. Cada fondo pide una cosa:
+   una barra clara taparía el hero, y una transparente sería ilegible
+   sobre el lienzo gris.
+================================================================== */
 export default function Navbar() {
   const [desplazada, setDesplazada] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const { abrir } = useContacto();
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
-  /* En cualquier página que NO sea la home no hay hero oscuro detrás, así
-     que la barra tiene que ir sólida desde el primer píxel. */
+  /* Fuera de la home no hay hero oscuro detrás, así que la barra va
+     sólida desde el primer píxel. */
   const enHome = pathname === "/";
   const solida = desplazada || !enHome || menuAbierto;
 
   useEffect(() => {
-    function alDesplazar() {
-      setDesplazada(window.scrollY > 24);
-    }
-    alDesplazar(); // por si se entra con la página ya desplazada
-    window.addEventListener("scroll", alDesplazar, { passive: true });
-    return () => window.removeEventListener("scroll", alDesplazar);
+    const mirar = () => setDesplazada(window.scrollY > 24);
+    mirar(); // por si se entra con la página ya desplazada
+    /* `passive`: no se llama a preventDefault, así que el navegador no
+       tiene que esperar a este manejador para desplazar. */
+    window.addEventListener("scroll", mirar, { passive: true });
+    return () => window.removeEventListener("scroll", mirar);
   }, []);
 
-  /* El menú móvil se cierra al cambiar de página: si no, queda abierto
-     sobre el destino. */
-  useEffect(() => setMenuAbierto(false), [pathname]);
+  useEffect(() => setMenuAbierto(false), [pathname, hash]);
+
+  /* Un enlace está activo si es su ruta, o si es el ancla en la que
+     estamos ahora mismo dentro de la home. */
+  const esActivo = ({ destino, ruta }) =>
+    ruta ? pathname === destino : enHome && `/${hash}` === destino;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4">
+    <header
+      className={`
+        fixed inset-x-0 top-0 z-50 transition-all duration-300
+        ${
+          solida
+            /* `blur-md` y no `xl`: es una capa esmerilada del ancho de la
+               ventana y fija, así que se recompone en cada fotograma del
+               desplazamiento. Con `xl` el coste se nota en equipos
+               modestos y no se gana nada visible. */
+            ? "bg-shell/85 py-3 shadow-[0_1px_24px_rgba(22,39,63,0.08)] backdrop-blur-md"
+            : "py-6"
+        }
+      `}
+    >
       <nav
-        className={`
-          mx-auto flex max-w-[1240px] items-center gap-4 rounded-full
-          px-4 py-2.5 transition-all duration-300 sm:px-5
-          ${
-            solida
-              ? "border border-white/70 bg-white/85 shadow-[var(--shadow-card)] backdrop-blur-xl"
-              : "border border-transparent bg-transparent"
-          }
-        `}
+        aria-label="Principal"
+        className="mx-auto flex max-w-[1560px] items-center justify-between gap-4 px-5 sm:px-7
+                   lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
       >
+        {/* ---------------- LOGO ---------------- */}
         <Link
           to="/"
-          className={`flex shrink-0 items-center gap-2.5 text-base font-extrabold tracking-tight transition-colors ${
-            solida ? "text-navy" : "text-white"
+          className={`flex shrink-0 items-center gap-2.5 text-lg font-bold tracking-tight transition-colors ${
+            solida ? "text-ink" : "text-white"
           }`}
         >
           <span
@@ -67,28 +90,54 @@ export default function Navbar() {
           AMH Solutions
         </Link>
 
-        {/* --- Enlaces (escritorio) --- */}
-        <ul className="ml-auto hidden items-center gap-1 lg:flex">
-          {NAVEGACION.map(({ etiqueta, destino, ruta }) => {
-            const activo = ruta && pathname === destino;
+        {/* ---------------- LA PASTILLA DEL MENÚ ----------------
+            Sin borde: la separación del fondo la da la sombra, como en
+            nido. Sobre el hero se vuelve cristal oscuro para no tapar el
+            video. */}
+        <ul
+          className={`
+            hidden items-center gap-1 rounded-full p-1 transition-colors duration-300
+            lg:flex lg:justify-self-center
+            ${
+              solida
+                ? "bg-smoke shadow-[0_4px_10px_rgba(22,39,63,0.06)]"
+                : "bg-white/10 backdrop-blur-md"
+            }
+          `}
+        >
+          {NAVEGACION.map((enlace) => {
+            const { etiqueta, destino, ruta } = enlace;
+            const activo = esActivo(enlace);
+
             const clases = `
-              rounded-full px-4 py-2 text-sm font-medium transition-colors
+              block whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors
               ${
-                solida
-                  ? activo
-                    ? "bg-sky-tint text-navy"
-                    : "text-body hover:bg-cloud hover:text-navy"
-                  : "text-white/80 hover:bg-white/10 hover:text-white"
+                activo
+                  ? solida
+                    ? "bg-sky-pill text-ink"
+                    : "bg-white text-navy"
+                  : solida
+                    ? "text-ink hover:opacity-60"
+                    : "text-white/80 hover:text-white"
               }
             `;
+
             return (
               <li key={etiqueta}>
                 {ruta ? (
-                  <Link to={destino} className={clases}>
+                  <Link
+                    to={destino}
+                    aria-current={activo ? "page" : undefined}
+                    className={clases}
+                  >
                     {etiqueta}
                   </Link>
                 ) : (
-                  <a href={destino} className={clases}>
+                  <a
+                    href={destino}
+                    aria-current={activo ? "page" : undefined}
+                    className={clases}
+                  >
                     {etiqueta}
                   </a>
                 )}
@@ -97,71 +146,106 @@ export default function Navbar() {
           })}
         </ul>
 
-        <button
-          type="button"
-          onClick={abrir}
-          className={`
-            ml-auto hidden shrink-0 rounded-full px-5 py-2.5 text-sm font-semibold
-            transition-all duration-200 hover:-translate-y-0.5 lg:ml-0 lg:inline-flex
-            ${
-              solida
-                ? "bg-navy text-white hover:bg-steel-navy"
-                : "bg-white text-navy hover:bg-cloud"
-            }
-          `}
-        >
-          Contáctanos
-        </button>
+        {/* ---------------- BOTONES ---------------- */}
+        <div className="hidden items-center gap-2.5 lg:flex lg:justify-self-end">
+          {/* "Entrar" es un <button> y no un <a>: lleva a la aplicación,
+              que todavía no existe. Un href a un ancla inexistente no
+              hace nada y ensucia la URL; así al menos no miente. */}
+          <button
+            type="button"
+            className={`
+              rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200
+              hover:-translate-y-0.5
+              ${
+                solida
+                  ? "bg-white text-ink shadow-[0_4px_10px_rgba(22,39,63,0.06)] hover:bg-smoke"
+                  : "bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
+              }
+            `}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            onClick={abrir}
+            className={`
+              rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200
+              hover:-translate-y-0.5
+              ${
+                solida
+                  ? "bg-navy text-white hover:bg-steel-navy"
+                  : "bg-white text-navy hover:bg-cloud"
+              }
+            `}
+          >
+            Contáctanos
+          </button>
+        </div>
 
-        {/* --- Botón del menú (móvil) --- */}
+        {/* ---------------- HAMBURGUESA (móvil) ---------------- */}
         <button
           type="button"
           onClick={() => setMenuAbierto((v) => !v)}
           aria-expanded={menuAbierto}
+          aria-controls="menu-movil"
           aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
-          className={`ml-auto grid h-10 w-10 place-items-center rounded-full transition-colors lg:hidden ${
-            solida ? "text-navy hover:bg-cloud" : "text-white hover:bg-white/10"
+          className={`grid h-10 w-10 place-items-center rounded-xl transition-colors lg:hidden ${
+            solida ? "text-ink hover:bg-white/60" : "text-white hover:bg-white/10"
           }`}
         >
           {menuAbierto ? <IconCerrar className="h-5 w-5" /> : <IconMenu className="h-5 w-5" />}
         </button>
       </nav>
 
-      {/* --- Panel del menú (móvil) --- */}
+      {/* ---------------- PANEL DESPLEGABLE (móvil) ---------------- */}
       {menuAbierto && (
-        <div className="mx-auto mt-2 max-w-[1240px] rounded-3xl border border-mist bg-white p-3 shadow-[var(--shadow-lift)] lg:hidden">
-          <ul className="space-y-1">
-            {NAVEGACION.map(({ etiqueta, destino, ruta }) => (
-              <li key={etiqueta}>
-                {ruta ? (
-                  <Link
-                    to={destino}
-                    className="block rounded-2xl px-4 py-3 text-sm font-medium text-body hover:bg-cloud hover:text-navy"
-                  >
-                    {etiqueta}
-                  </Link>
-                ) : (
-                  <a
-                    href={destino}
-                    onClick={() => setMenuAbierto(false)}
-                    className="block rounded-2xl px-4 py-3 text-sm font-medium text-body hover:bg-cloud hover:text-navy"
-                  >
-                    {etiqueta}
-                  </a>
-                )}
-              </li>
-            ))}
+        <div
+          id="menu-movil"
+          className="mx-[var(--margen-lienzo)] mt-3 rounded-[var(--radius-seccion)] border border-white/60
+                     bg-white/90 p-3 shadow-[var(--shadow-lift)] backdrop-blur-xl lg:hidden"
+        >
+          <ul className="flex flex-col">
+            {NAVEGACION.map((enlace) => {
+              const { etiqueta, destino, ruta } = enlace;
+              const activo = esActivo(enlace);
+              const clases = `block rounded-2xl px-4 py-3 text-base font-medium transition-colors ${
+                activo ? "bg-sky-pill text-ink" : "text-ink hover:bg-smoke"
+              }`;
+
+              return (
+                <li key={etiqueta}>
+                  {ruta ? (
+                    <Link to={destino} className={clases}>
+                      {etiqueta}
+                    </Link>
+                  ) : (
+                    <a href={destino} onClick={() => setMenuAbierto(false)} className={clases}>
+                      {etiqueta}
+                    </a>
+                  )}
+                </li>
+              );
+            })}
           </ul>
-          <button
-            type="button"
-            onClick={() => {
-              setMenuAbierto(false);
-              abrir();
-            }}
-            className="mt-2 w-full rounded-2xl bg-navy px-4 py-3 text-sm font-semibold text-white"
-          >
-            Contáctanos
-          </button>
+
+          <div className="mt-2 flex gap-2 px-1 pb-1">
+            <button
+              type="button"
+              className="flex-1 rounded-full bg-smoke px-5 py-3 text-sm font-medium text-ink"
+            >
+              Entrar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMenuAbierto(false);
+                abrir();
+              }}
+              className="flex-1 rounded-full bg-navy px-5 py-3 text-sm font-medium text-white"
+            >
+              Contáctanos
+            </button>
+          </div>
         </div>
       )}
     </header>
