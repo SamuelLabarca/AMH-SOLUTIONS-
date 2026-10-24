@@ -10,6 +10,24 @@
 
    ⚠️ Va DESPUÉS del @import a propósito: en CSS los @import tienen que
    ser lo primero del archivo o el navegador los descarta. */
+/* Garet (todos los párrafos), de Type Forward. Licencia
+   web gratuita de Book y Heavy (hasta 500k visitas/mes); el PDF está
+   en Desktop\Legal. Los WOFF2 vienen tal cual del paquete. */
+@font-face {
+  font-family: "Garet";
+  src: url("/fonts/Garet-Book.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Garet";
+  src: url("/fonts/Garet-Heavy.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @font-face {
   font-family: "Urbanist";
   src: url("/fonts/Urbanist-Variable.woff2") format("woff2");
@@ -26,30 +44,81 @@
 ------------------------------------------------------------------ */
 @theme {
   /* --- Los azules. Son una escala, de más oscuro a más claro. --- */
-  /* Navy profundo: footer y los fondos más oscuros. */
+  /* Navy profundo: fondos oscuros que no son el hero. */
   --color-ink: #16273f;
-  /* PRIMARIO: botones, cabeceras, fondos oscuros. */
+  /* Azul de superficie oscura: cabeceras y secciones navy. */
   --color-navy: #243b61;
   /* Apoyo y paradas intermedias de los degradados. */
   --color-steel-navy: #355080;
   --color-slate-blue: #6e84a8;
-  /* ACENTO: enlaces, eyebrows, iconos. OJO: nunca en titulares. */
-  --color-sky: #4f93d1;
-  --color-sky-light: #6ba9dd;
-  /* Tinte suave: fondos de sección y badges. */
-  --color-sky-tint: #e8f1fa;
+
+  /* --- EL AZUL ELÉCTRICO (de QuickBooks) ---
+     Muestreado de su página, no inventado: el hero de
+     quickbooks.intuit.com/global/es va de #0E0339 arriba a #1F5CE0
+     abajo, pasando por #172B81. Esos tres son los que usamos en el
+     degradado del hero.
+
+     `sky` ERA #4F93D1, un azul apagado. Se cambió a este: es el mismo
+     azul que hace que el hero de QuickBooks resalte, y a tamaño de
+     texto pequeño sobre blanco tiene contraste de sobra (~5,4:1),
+     cosa que el anterior no cumplía con holgura. */
+  --color-indigo: #0e0339;
+  --color-indigo-mid: #172b81;
+  /* ACENTO: botones, enlaces, eyebrows, iconos. Nunca en titulares.
+     Era #1F5CE0 (el de QuickBooks); se oscureció un punto para que
+     botones y titulares pesen más. Sobre blanco sube a ~7:1.
+     `sky-light` es el hover: ahora es el azul anterior. */
+  /* ⚠️ 6 oct: Samuel pidió que botones y letras azules usen EL AZUL de
+     las formas de "¿Por qué elegirnos?" (`azul-vivo`, #1D70F5). Era
+     #1A4EC4. Los FONDOS (degradados de cabecera, tarjeta destacada de
+     la tienda) NO cambian: usan `fondo-sky` / `fondo-sky-light`, que
+     guardan los valores de antes.
+     `sky-light` es el hover de los botones y el azul sobre fondo
+     oscuro: un punto más claro para que se lea sobre negro y navy. */
+  --color-sky: #1d70f5;
+  --color-sky-light: #4a8cf7;
+  --color-fondo-sky: #1a4ec4;
+  --color-fondo-sky-light: #1f5ce0;
+  /* Un punto más oscuro que `sky`. Solo para el botón del hero de la
+     home: sobre la foto oscura, un botón grande en `sky` se ve MÁS
+     CLARO que los iconos `sky` de las tarjetas blancas de al lado
+     (mismo color, distinta percepción). Con este se ven iguales. */
+  --color-sky-hondo: #1642a8;
+  /* Tinte suave: fondos de sección y badges. Recalculado sobre el azul
+     nuevo; el tinte viejo (#E8F1FA) se veía verdoso al lado. */
+  --color-sky-tint: #eaf0fd;
+  /* Azul vivo del diseño de "¿Por qué elegirnos?" (Canva): las formas
+     detrás de las imágenes y la línea punteada. Más luminoso que `sky`
+     a propósito: ahí es decoración, no texto, y tiene que brillar. */
+  --color-azul-vivo: #1d70f5;
+
+  /* Amarillo de la composición de /nosotros (la chica del portátil, de
+     un diseño de Canva): va del amarillo del suéter a un melocotón. Solo
+     decoración; nunca texto, que sobre blanco no se leería. */
+  --color-amarillo: #f9cf2f;
+  --color-amarillo-claro: #fdc98c;
 
   /* --- Los neutros. --- */
-  /* Pastilla del enlace activo del menú y de los badges claros. Es el
-     equivalente al ámbar de nido: un tono propio, más saturado que
-     `sky-tint`, porque sobre la pastilla gris del menú el tinte se
-     confundía con el fondo y el activo no se distinguía. */
-  --color-sky-pill: #cfe3f7;
+  /* Pastilla del enlace activo del menú y de los badges claros: un tono
+     propio, más saturado que `sky-tint`, porque sobre un fondo claro el
+     tinte se confunde con el fondo y el activo no se distingue. */
+  --color-sky-pill: #d4e0fb;
 
   /* --- Los neutros. --- */
-  /* Lienzo de la página. Gris, no blanco: es lo que hace que las
-     secciones-tarjeta blancas se lean como tarjetas y que sus esquinas
-     redondeadas se vean. Tomado de la estética de nido. */
+  /* Gris carbón de la tarjeta del Business Panel. Es el MISMO gris del
+     panel oscuro del login de My Business Panel (muestreado de la
+     captura, que va de #101010 a #282828 y se queda en ~#161616 en los
+     bordes). Así la captura se funde con la tarjeta y se lee como una
+     sola pieza. Si cambia el login del sistema, vuelve a muestrear. */
+  --color-carbon: #161616;
+  /* Gris claro neutro, sin el azul del tinte. Fondo de Servicios; el
+     Business Panel, debajo, va en blanco. */
+  --color-piedra: #f1f1ef;
+
+  /* Fondo del <body>. Gris muy claro. Antes era "el lienzo": el gris que
+     se veía entre las secciones-tarjeta redondeadas. Ya no hay lienzo
+     (las secciones van a sangre y cuadradas), así que solo se ve si
+     alguna página queda más corta que la ventana. */
   --color-shell: #f0f0f0;
   /* Blanco roto: pastilla del menú y campos de formulario. En nido es el
      `smoke` #F5F5F5; aquí lleva una gota de azul para que case con la
@@ -64,14 +133,55 @@
   --color-body: #3a4658;
 
   --font-sans: "Urbanist", ui-sans-serif, system-ui, sans-serif;
+  /* Poppins: TODOS los titulares de la página (regla h1–h4 más abajo).
+     Garet: TODOS los párrafos (regla `p` más abajo). Se autohospeda en
+     /fonts (ver el @font-face de Garet).
+     Poppins llega de Google Fonts (index.html). */
+  --font-poppins: "Poppins", "Urbanist", ui-sans-serif, system-ui, sans-serif;
+  --font-garet: "Garet", "Urbanist", ui-sans-serif, system-ui, sans-serif;
+  /* Instrument Serif cursiva (Google Fonts): SOLO para acentos de
+     personalidad, como "la primera conversación" en Servicios. Nunca
+     en bloques de texto. */
+  --font-serif: "Instrument Serif", Georgia, serif;
 
-  /* Radio de las secciones-tarjeta: 32px, el de nido. Un único valor para
-     que TODAS las curvas de la página sean la misma curva — hero, footer
-     y secciones incluidos. Si cambia, cambia aquí. */
-  --radius-seccion: 2rem;
-  /* El margen de lienzo gris que rodea cada tarjeta. También único: es lo
-     que alinea verticalmente los bordes de todas las secciones. */
-  --margen-lienzo: 0.75rem;
+  /* Alto de la barra de navegación. La barra es blanca y OPACA, así que
+     ya no flota sobre el hero: el contenido tiene que empezar por
+     debajo. `<main>` se separa justo este valor (ver App.jsx). Si
+     cambia el padding de la barra, cambia aquí también. */
+  --alto-navbar: 4.5rem;
+
+  /* ⚠️ SECCIONES CUADRADAS Y A SANGRE.
+
+     Estos dos valen 0 a propósito. Antes la página era la de nido:
+     secciones como tarjetas de 32px de radio flotando sobre un lienzo
+     gris de 12px. Se quitó entera. Airtek y QuickBooks, que son la
+     referencia, apilan bandas a sangre sin curvas ni separación, y es
+     lo que hace que la página se lea como un recorrido continuo en vez
+     de como una pila de fichas.
+
+     Siguen existiendo como variables y no borradas porque TODOS los
+     componentes las usan: poniéndolas a 0.75rem/2rem vuelve el look de
+     tarjeta en un solo sitio, sin tocar JSX. */
+  --radius-seccion: 0rem;
+  --margen-lienzo: 0rem;
+
+  /* El radio de las piezas que SÍ llevan curva: tarjetas de servicio,
+     pastillas del hero, tarjetas interiores. Pequeño (12px), al estilo
+     de las tarjetas blancas de QuickBooks: lo justo para que no sea un
+     rectángulo seco, lejos de las curvas gordas de antes. */
+  --radius-tarjeta: 0.75rem;
+
+  /* El radio de las TARJETAS CON FOTO de Servicios.
+
+     Airtek usa 25px (su CSS lo declara como `--rounded: 25px`) y eso es
+     lo que había aquí. Se bajó a 16px porque nuestras tarjetas se tocan
+     y las suyas no: las de Airtek viven sueltas en un carrusel, donde
+     una curva gorda se ve bien. Pegadas, dos curvas de 25px enfrentadas
+     dejan un rombo de fondo entre ellas que parece un error de montaje.
+
+     Sigue aparte de `--radius-tarjeta` (12px): una foto grande aguanta
+     algo más de curva que una tarjeta de texto pequeña. */
+  --radius-foto: 1rem;
 
   /* Sombras en capas y con tinte navy (CLAUDE.md §8): una sombra de
      contacto corta y otra ambiental larga. El gris puro se ve sucio. */
@@ -94,6 +204,50 @@ body {
   /* El lienzo gris, no blanco. Ver --color-shell. */
   background-color: var(--color-shell);
   -webkit-font-smoothing: antialiased;
+
+  /* ⚠️ PESO 500 DE BASE, no 400. Es la tipografía de nido: allí los
+     párrafos van en `font-medium` casi sin excepción, y es la mitad de
+     lo que hace que Urbanist se vea como se ve.
+
+     Urbanist en regular es una fuente muy ligera: a tamaños de cuerpo
+     pequeños los trazos se adelgazan y el texto se lee gris aunque el
+     color sea oscuro. En 500 recupera cuerpo sin llegar a parecer
+     negrita.
+
+     Va en `body` y no componente a componente para que lo herede todo,
+     incluidos los <p> que se escriban mañana. Negritas y titulares lo
+     pisan con sus propias clases, como siempre. */
+  font-weight: 500;
+}
+
+/* ⚠️ Estas dos reglas van en `@layer base`. Fuera de una capa, el CSS
+   de Tailwind v4 (que vive en `@layer utilities`) pierde SIEMPRE contra
+   él, sin importar la especificidad: un `font-bold` en un <p> quedaba
+   anulado por el `font-weight: 400` de aquí. Dentro de `base`, las
+   clases de cada componente vuelven a mandar. */
+@layer base {
+  /* TODOS LOS TITULARES EN POPPINS: el del hero, los H2 de sección
+     ("Nuestros Servicios", "My Business Panel"…) y los H3 de tarjetas.
+     Va aquí y no componente a componente para que lo hereden también
+     los titulares que se escriban mañana. El cuerpo sigue en Urbanist.
+     Pesos cargados: 500–900 (index.html); `font-black` del hero es 900. */
+  :where(h1, h2, h3, h4) {
+    font-family: var(--font-poppins);
+  }
+
+  /* TODOS LOS PÁRRAFOS EN GARET BOOK. Solo <p>: botones, barra,
+     pastillas y etiquetas siguen en Urbanist, que a tamaño pequeño y en
+     mayúsculas aguanta mejor.
+
+     Garet solo tiene Book (400) y Heavy (800). El cuerpo hereda peso 500
+     (ver body) y el navegador cae en Book, que es lo que se quiere; un
+     `font-semibold` dentro de un párrafo salta a Heavy. Por eso el peso
+     va fijado a 400 aquí: sin esto, en algún navegador el 500 podría
+     sintetizarse como una negrita falsa. */
+  :where(p) {
+    font-family: var(--font-garet);
+    font-weight: 400;
+  }
 }
 
 /* Foco visible en todo lo que se puede enfocar. No es opcional: sin esto
@@ -148,6 +302,18 @@ body {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Vaivén lento de las etiquetas que flotan junto a la ilustración de
+   /nosotros. 6px y 6s: se nota que está viva sin distraer del texto. */
+@keyframes flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
   }
 }
 

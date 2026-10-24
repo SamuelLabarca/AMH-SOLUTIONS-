@@ -1,0 +1,9 @@
+# Para cuando el sitio se conecte a Netlify desde el repositorio de Git
+# (despliegue automático en cada push). Si se sube a mano arrastrando la
+# carpeta, este archivo no se usa: bastan _redirects y _headers.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"

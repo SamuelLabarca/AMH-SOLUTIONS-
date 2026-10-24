@@ -8,7 +8,8 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { IconCerrar, IconCorreo, IconTelefono, IconChat, IconFlecha } from "./Iconos.jsx";
+import { IconCerrar, IconCheck, IconWhatsApp } from "./Iconos.jsx";
+import { SERVICIOS, WHATSAPP } from "../data/contenido.js";
 
 /* ==================================================================
    CONTACTO
@@ -21,6 +22,16 @@ import { IconCerrar, IconCorreo, IconTelefono, IconChat, IconFlecha } from "./Ic
    barra de navegación, el hero, la llamada de la home, el footer) y
    todos tienen que compartir el mismo modal. Duplicarlo daría varios
    diálogos superpuestos.
+
+   Solo hay UN formulario: pedir una reunión con el equipo
+   (`abrirReunion`). Sin fecha ni hora a propósito (Samuel: elegir día y
+   hora en la web podía chocar con la agenda real); el momento se
+   coordina después por WhatsApp.
+
+   ⚠️ Había un segundo modo, "contacto" (`abrir`): un formulario de
+   mensaje que NO enviaba nada (simulaba el envío) y mostraba datos de
+   contacto de relleno. Se quitó el 7 oct 2026. Para un contacto rápido
+   están el WhatsApp y el teléfono (`ATENCION` en contenido.js).
 ================================================================== */
 
 const ContextoContacto = createContext(null);
@@ -33,7 +44,7 @@ export function ProveedorContacto({ children }) {
      se queda al principio de la página, perdido. */
   const disparador = useRef(null);
 
-  const abrir = useCallback(() => {
+  const abrirReunion = useCallback(() => {
     disparador.current = document.activeElement;
     setAbierto(true);
   }, []);
@@ -45,7 +56,10 @@ export function ProveedorContacto({ children }) {
     requestAnimationFrame(() => disparador.current?.focus?.());
   }, []);
 
-  const valor = useMemo(() => ({ abierto, abrir, cerrar }), [abierto, abrir, cerrar]);
+  const valor = useMemo(
+    () => ({ abierto, abrirReunion, cerrar }),
+    [abierto, abrirReunion, cerrar],
+  );
 
   return (
     <ContextoContacto.Provider value={valor}>
@@ -64,68 +78,11 @@ export function useContacto() {
 }
 
 /* ------------------------------------------------------------------
-   EL BOTÓN
-
-   Deliberadamente pequeño: es una invitación, no una sección. Va donde
-   haga falta.
------------------------------------------------------------------- */
-export function BotonContacto({ className = "", children = "Contacta nuestros servicios" }) {
-  const { abrir } = useContacto();
-
-  return (
-    <button
-      type="button"
-      onClick={abrir}
-      className={`
-        group inline-flex items-center gap-3 rounded-full
-        border border-mist bg-white py-2 pl-5 pr-2
-        text-sm font-semibold text-navy
-        shadow-[var(--shadow-card)]
-        transition-[box-shadow,transform,border-color] duration-200
-        hover:-translate-y-0.5 hover:border-sky/40 hover:shadow-[var(--shadow-lift)]
-        ${className}
-      `}
-    >
-      {children}
-      {/* El círculo de acento se ensancha al pasar el ratón. Es el mismo
-          gesto de "seguir adelante" que la flecha, pero sin moverla de
-          sitio, que descolocaría el texto. */}
-      <span
-        className="grid h-8 w-8 place-items-center rounded-full bg-sky text-white
-                   transition-transform duration-200 group-hover:scale-110"
-      >
-        <IconFlecha className="h-4 w-4" />
-      </span>
-    </button>
-  );
-}
-
-/* ------------------------------------------------------------------
-   VÍAS DE CONTACTO
-
-   Se ofrecen junto al formulario porque no todo el mundo quiere
-   rellenar campos: hay quien prefiere llamar y ya está.
------------------------------------------------------------------- */
-const VIAS = [
-  { icono: IconCorreo, etiqueta: "Escríbenos", valor: "soporte@amhsolutions.com" },
-  { icono: IconTelefono, etiqueta: "Llámanos", valor: "+58 424 000 0000" },
-  { icono: IconChat, etiqueta: "Chat en vivo", valor: "Lunes a viernes, 8:00–18:00" },
-];
-
-const ASUNTOS = [
-  "Quiero una demostración",
-  "Tengo dudas sobre los planes",
-  "Soporte técnico",
-  "Otro asunto",
-];
-
-/* ------------------------------------------------------------------
    EL MODAL
 ------------------------------------------------------------------ */
 function ModalContacto() {
   const { abierto, cerrar } = useContacto();
   const panel = useRef(null);
-  const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
 
   /* --- Escape, bloqueo del desplazamiento y trampa de foco ---
@@ -195,17 +152,6 @@ function ModalContacto() {
 
   if (!abierto) return null;
 
-  async function alEnviar(evento) {
-    evento.preventDefault();
-    setEnviando(true);
-    /* TODO: aquí irá el POST al backend Node.js. De momento solo se
-       simula la espera para que la interfaz esté terminada y el día que
-       exista el endpoint solo haya que cambiar estas dos líneas. */
-    await new Promise((r) => setTimeout(r, 700));
-    setEnviando(false);
-    setEnviado(true);
-  }
-
   /* Va en un portal, al final del <body>: dentro del árbol de la página
      cualquier `overflow: hidden` o `transform` de una sección padre lo
      recortaría o rompería su posición fija. */
@@ -232,11 +178,11 @@ function ModalContacto() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="titulo-contacto"
-        className="relative z-10 w-full max-w-[860px] overflow-hidden
+        className={`relative z-10 w-full overflow-hidden max-w-[760px]
                    rounded-t-[2rem] bg-white shadow-[var(--shadow-destacado)]
                    sm:rounded-[2rem]
                    max-h-[92vh] overflow-y-auto
-                   motion-safe:animate-[subir_.3s_cubic-bezier(.22,1,.36,1)_both]"
+                   motion-safe:animate-[subir_.3s_cubic-bezier(.22,1,.36,1)_both]`}
       >
         <button
           type="button"
@@ -249,142 +195,175 @@ function ModalContacto() {
           <IconCerrar className="h-5 w-5" />
         </button>
 
-        <div className="grid gap-0 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
-          {/* --- Columna izquierda: las vías directas, sobre navy --- */}
-          <div className="bg-navy p-8 text-white sm:p-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-light">
-              Estamos aquí
-            </p>
-            <h2 id="titulo-contacto" className="mt-3 text-2xl font-extrabold leading-[1.15]">
-              Hablemos de tu negocio
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-white/70">
-              Cuéntanos qué necesitas y te responde una persona del equipo, no un
-              robot. Normalmente en menos de un día hábil.
-            </p>
-
-            <ul className="mt-8 space-y-5">
-              {VIAS.map(({ icono: Icono, etiqueta, valor }) => (
-                <li key={etiqueta} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-sky-light">
-                    <Icono className="h-4.5 w-4.5" />
-                  </span>
-                  <span>
-                    <span className="block text-xs uppercase tracking-wider text-white/50">
-                      {etiqueta}
-                    </span>
-                    <span className="block text-sm font-medium">{valor}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* --- Columna derecha: el formulario --- */}
-          <div className="p-8 sm:p-10">
-            {enviado ? (
-              <div className="flex h-full min-h-[300px] flex-col items-center justify-center text-center">
-                <span className="grid h-14 w-14 place-items-center rounded-full bg-sky-tint text-sky">
-                  <IconCorreo className="h-7 w-7" />
-                </span>
-                <h3 className="mt-5 text-xl font-extrabold text-black">Mensaje enviado</h3>
-                <p className="mt-2 max-w-[38ch] text-sm leading-relaxed text-body">
-                  Gracias por escribirnos. Un miembro del equipo de soporte se pondrá
-                  en contacto contigo muy pronto.
-                </p>
-                <button
-                  type="button"
-                  onClick={cerrar}
-                  className="mt-7 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-steel-navy"
-                >
-                  Cerrar
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={alEnviar} className="space-y-4">
-                <Campo etiqueta="Nombre" nombre="nombre" autoComplete="name" required />
-                <Campo
-                  etiqueta="Empresa"
-                  nombre="empresa"
-                  autoComplete="organization"
-                />
-                <Campo
-                  etiqueta="Correo"
-                  nombre="correo"
-                  tipo="email"
-                  autoComplete="email"
-                  required
-                />
-
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-steel">
-                    ¿En qué te ayudamos?
-                  </span>
-                  <select
-                    name="asunto"
-                    className="w-full rounded-xl border border-mist bg-cloud px-4 py-3 text-sm
-                               text-body transition-colors
-                               focus:border-sky focus:bg-white focus:outline-none"
-                  >
-                    {ASUNTOS.map((a) => (
-                      <option key={a}>{a}</option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-steel">
-                    Mensaje
-                  </span>
-                  <textarea
-                    name="mensaje"
-                    rows={4}
-                    required
-                    placeholder="Cuéntanos brevemente qué necesitas…"
-                    className="w-full resize-none rounded-xl border border-mist bg-cloud px-4 py-3 text-sm
-                               text-body transition-colors placeholder:text-steel/60
-                               focus:border-sky focus:bg-white focus:outline-none"
-                  />
-                </label>
-
-                <button
-                  type="submit"
-                  disabled={enviando}
-                  className="w-full rounded-full bg-navy px-6 py-3.5 text-sm font-semibold text-white
-                             shadow-[var(--shadow-card)] transition-all duration-200
-                             hover:bg-steel-navy hover:shadow-[var(--shadow-lift)]
-                             disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {enviando ? "Enviando…" : "Enviar mensaje"}
-                </button>
-
-                <p className="text-center text-xs text-steel">
-                  Tus datos solo se usan para responderte. No los compartimos.
-                </p>
-              </form>
-            )}
-          </div>
-        </div>
+        <Reunion enviado={enviado} setEnviado={setEnviado} cerrar={cerrar} />
       </div>
     </div>,
     document.body,
   );
 }
 
-function Campo({ etiqueta, nombre, tipo = "text", ...props }) {
+/* ------------------------------------------------------------------
+   MODO REUNIÓN: pedir una llamada con el equipo
+
+   Una sola columna blanca con titular grande y campos en PÍLDORA de
+   filo negro (referencia que pasó Samuel). Se quitó la columna navy de
+   "Hablemos de tu negocio": ocupaba media tarjeta y no aportaba.
+
+   Sin fecha ni hora (ver arriba). Se pide cómo prefiere la llamada
+   (videollamada o teléfono) y de qué quiere hablar; el resto se
+   coordina por WhatsApp.
+
+   ⚠️ Sin backend todavía: la solicitud sale por WhatsApp ya escrita,
+   como la de /demo. Cuando haya API, `pedirLlamada` es lo único que
+   cambia.
+------------------------------------------------------------------ */
+const TEMAS = ["My Business Panel", ...SERVICIOS.map((s) => s.titulo), "Aún no lo sé"];
+
+function Reunion({ enviado, setEnviado, cerrar }) {
+  const [enlace, setEnlace] = useState(null);
+
+  function alEnviar(evento) {
+    evento.preventDefault();
+    const url = pedirLlamada(new FormData(evento.currentTarget));
+    window.open(url, "_blank", "noopener,noreferrer");
+    setEnlace(url);
+    setEnviado(true);
+  }
+
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-steel">
-        {etiqueta}
+    <div className="px-6 pb-8 pt-14 sm:px-12 sm:pb-12 sm:pt-14">
+      {enviado ? (
+        <div className="flex min-h-[320px] flex-col items-center justify-center text-center">
+          <span className="grid h-14 w-14 place-items-center rounded-full bg-sky-tint text-sky">
+            <IconCheck className="h-7 w-7" />
+          </span>
+          <h2 id="titulo-contacto" className="mt-5 text-2xl font-extrabold text-black">
+            ¡Solicitud lista!
+          </h2>
+          <p className="mt-2 max-w-[40ch] text-sm leading-relaxed text-body">
+            Se abrió WhatsApp con tu solicitud. Envía el mensaje y te escribimos para coordinar la llamada.
+          </p>
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
+            {enlace && (
+              <a
+                href={enlace}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 font-bold text-white transition-colors hover:bg-ink"
+              >
+                <IconWhatsApp className="h-5 w-5" />
+                Abrir WhatsApp otra vez
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={cerrar}
+              className="rounded-full px-6 py-3 font-bold text-black ring-[1.5px] ring-black transition-colors hover:bg-cloud"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={alEnviar}>
+          {/* Titular grande y centrado, en Poppins extrabold: es lo que
+              manda en la tarjeta. */}
+          <h2
+            id="titulo-contacto"
+            className="mx-auto max-w-[20ch] text-balance text-center font-medium leading-[1.1] tracking-[-0.02em] text-sky text-[clamp(1.625rem,3.6vw,2.5rem)]"
+          >
+            Agenda una reunión con nuestro equipo
+          </h2>
+          <p className="mx-auto mt-3 max-w-[44ch] text-center text-sm leading-relaxed text-body">
+            Déjanos tus datos y te escribimos por WhatsApp para coordinar el día y la hora.
+          </p>
+
+          <div className="mt-7 grid gap-3.5 sm:grid-cols-2">
+            <input name="nombre" required autoComplete="name" placeholder="Nombre y apellido *" aria-label="Nombre y apellido" className={`${CAMPO_PILDORA} sm:col-span-2`} />
+            <input name="empresa" autoComplete="organization" placeholder="Nombre de la empresa" aria-label="Nombre de la empresa" className={`${CAMPO_PILDORA} sm:col-span-2`} />
+            <input name="telefono" required type="tel" inputMode="tel" autoComplete="tel" placeholder="WhatsApp *" aria-label="WhatsApp" className={CAMPO_PILDORA} />
+            <input name="correo" required type="email" autoComplete="email" placeholder="Correo electrónico *" aria-label="Correo electrónico" className={CAMPO_PILDORA} />
+          </div>
+
+          <fieldset className="mt-5">
+            <legend className="mb-2 text-sm font-bold text-black">¿Cómo prefieres la llamada?</legend>
+            <div className="grid grid-cols-2 gap-2">
+              <OpcionPildora nombre="medio" valor="Videollamada" defaultChecked>Videollamada</OpcionPildora>
+              <OpcionPildora nombre="medio" valor="Llamada telefónica">Teléfono</OpcionPildora>
+            </div>
+          </fieldset>
+
+          <fieldset className="mt-4">
+            <legend className="mb-2 text-sm font-bold text-black">¿De qué quieres hablar?</legend>
+            <div className="flex flex-wrap gap-2">
+              {TEMAS.map((tema) => (
+                <OpcionPildora key={tema} nombre="tema" valor={tema} ajustada>
+                  {tema}
+                </OpcionPildora>
+              ))}
+            </div>
+          </fieldset>
+
+          <textarea
+            name="mensaje"
+            rows={2}
+            placeholder="Algo que debamos saber (opcional)"
+            aria-label="Algo que debamos saber"
+            className={`${CAMPO_PILDORA} mt-5 resize-none rounded-[1.5rem]`}
+          />
+
+          <button
+            type="submit"
+            className="mt-5 w-full rounded-full bg-sky px-8 py-3.5 text-base font-extrabold text-white transition-colors hover:bg-sky-light"
+          >
+            Solicitar reunión
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
+
+/* Campo de la reunión: PÍLDORA con filo negro y el nombre del campo
+   dentro (placeholder en negrita), como la referencia que pasó Samuel.
+   Sin etiqueta encima para que el formulario quepa sin scroll; el
+   nombre accesible va en `aria-label`. */
+const CAMPO_PILDORA =
+  "w-full rounded-full border-[1.5px] border-black bg-white px-5 py-3 text-[0.9375rem] font-semibold text-black " +
+  "placeholder:font-bold placeholder:text-black/80 focus:border-sky focus:outline-none focus:ring-4 focus:ring-sky/15";
+
+/* Opción de radio con la misma estética: píldora con filo negro que se
+   rellena del azul `sky` al elegirla (como el botón de enviar; antes
+   iba en negro y Samuel lo pidió en azul). Radio real con `sr-only` (teclado y
+   lector de pantalla). `ajustada` la deja del ancho de su texto. */
+function OpcionPildora({ nombre, valor, ajustada = false, children, ...resto }) {
+  return (
+    <label className={`cursor-pointer ${ajustada ? "" : "block"}`}>
+      <input type="radio" name={nombre} value={valor} required className="peer sr-only" {...resto} />
+      <span
+        className={`block rounded-full border-[1.5px] border-black px-4 py-2 text-center text-sm font-bold text-black transition-colors
+                    hover:bg-cloud peer-checked:border-sky peer-checked:bg-sky peer-checked:text-white peer-checked:hover:bg-sky
+                    peer-focus-visible:ring-4 peer-focus-visible:ring-sky/25`}
+      >
+        {children}
       </span>
-      <input
-        type={tipo}
-        name={nombre}
-        className="w-full rounded-xl border border-mist bg-cloud px-4 py-3 text-sm
-                   text-body transition-colors placeholder:text-steel/60
-                   focus:border-sky focus:bg-white focus:outline-none"
-        {...props}
-      />
     </label>
   );
+}
+
+/* Arma la solicitud y devuelve el enlace de WhatsApp. ⚠️ Aquí irá el
+   POST a la API cuando exista. */
+function pedirLlamada(datos) {
+  const lineas = [
+    "Hola, quiero agendar una llamada con AMH Solutions.",
+    "",
+    `Nombre: ${datos.get("nombre")}`,
+    datos.get("empresa") ? `Empresa: ${datos.get("empresa")}` : null,
+    `WhatsApp: ${datos.get("telefono")}`,
+    `Correo: ${datos.get("correo")}`,
+    `Prefiero: ${datos.get("medio")}`,
+    `Tema: ${datos.get("tema")}`,
+    datos.get("mensaje") ? `Comentario: ${datos.get("mensaje")}` : null,
+  ].filter((l) => l !== null);
+  return `https://wa.me/${WHATSAPP.numero}?text=${encodeURIComponent(lineas.join("\n"))}`;
 }

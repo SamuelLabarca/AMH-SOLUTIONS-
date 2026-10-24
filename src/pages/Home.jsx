@@ -1,32 +1,51 @@
 import Hero from "../sections/Hero.jsx";
-import Nosotros from "../sections/Nosotros.jsx";
 import Servicios from "../sections/Servicios.jsx";
-import LlamadaContacto from "../sections/LlamadaContacto.jsx";
+import BusinessPanel from "../sections/BusinessPanel.jsx";
+import PorQueElegirnos from "../sections/PorQueElegirnos.jsx";
+import Nosotros from "../sections/Nosotros.jsx";
 
 /* ==================================================================
    PÁGINA: HOME  (/)
 
    EL ORDEN DE LA HOME vive aquí y solo aquí:
 
-     1. Hero          — video aéreo + las métricas de respaldo
-     2. Nosotros      — quiénes somos antes que qué vendemos
-     3. Servicios     — los cuatro módulos
-     4. Contacto      — la invitación; el formulario está en el modal
+     1. Hero           — la foto del edificio y la promesa
+     2. Servicios      — los cuatro servicios, en tarjetas con foto
+     3. BusinessPanel  — presentación del producto
+     4. PorQueElegirnos — tres ventajas
+     5. Nosotros       — franja corta que invita a /nosotros (la página
+                         completa)
      (el footer lo pone el layout, es común a todas las páginas)
 
-   El producto y los precios NO están aquí: tienen su propia página en
+   ⚠️ Servicios va INMEDIATAMENTE después del hero. El visitante que
+   acaba de leer "evoluciona a una administración sin procesos
+   manuales" quiere saber qué le vendes: el "nosotros" convence cuando
+   ya hay interés, no antes.
+
+   ⚠️ `LlamadaContacto` y la sección Nosotros completa se quitaron (6 oct
+   2026); están en Desktop\mbp2026-respaldo-limpieza. El ancla
+   `/#contacto` no apunta a nada.
+
+   El producto y los precios tienen además su propia página en
    /producto.
 
-   Ritmo de fondos: oscuro → blanco → tinte → navy → ink. La página se va
-   oscureciendo hacia el final, que es lo que cierra el recorrido.
+   Ritmo de fondos: oscuro → gris claro → blanco → blanco. Panel y
+   "¿Por qué elegirnos?" comparten el blanco: los separa la tarjeta
+   carbón del panel, que corta la banda.
 ================================================================== */
 export default function Home() {
   return (
     <>
       <Hero />
-      <Nosotros />
       <Servicios />
-      <LlamadaContacto />
+      <BusinessPanel
+        imagen="captura-login"
+        alt="Pantalla de inicio de sesión de My Business Panel"
+        imagenAntes="paper_works"
+        altAntes="Persona revisando papeles a mano junto al portátil, con hojas arrugadas sobre la mesa"
+      />
+      <PorQueElegirnos />
+      <Nosotros />
     </>
   );
 }

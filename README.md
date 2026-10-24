@@ -1,16 +1,104 @@
-# React + Vite
+# AMH Solutions — Landing de My Business Panel
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Landing institucional de **AMH Solutions** para promocionar **My Business Panel**, un
+sistema de gestión empresarial todo-en-uno (punto de venta, inventario, compras,
+recursos humanos y finanzas). Público objetivo: empresas que buscan centralizar la
+gestión de su negocio. Todo el contenido va en **español**.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Tecnología | Uso |
+|---|---|
+| **React 19** | UI declarativa |
+| **Vite 8** | Bundler y dev server |
+| **Tailwind CSS v4** | Estilos utilitarios + tokens en `@theme` |
+| **React Router 7** | Enrutamiento cliente |
+| **Sharp** | Optimización de imágenes (WebP) |
+| **Oxlint** | Linter |
 
-## React Compiler
+## Arrancar
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # comprueba que compila
+npm run lint     # oxlint
+```
 
-## Expanding the Oxlint configuration
+### Comandos
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Servidor de desarrollo (Vite). |
+| `npm run build` | Build de producción. |
+| `npm run preview` | Sirve el build localmente. |
+| `npm run lint` | Corre Oxlint. |
+| `npm run imagenes` | Genera los WebP de `public/img/` con Sharp. |
+
+## Estructura de carpetas
+
+```
+AMH-frontend/
+├── index.html             # Preload de fuentes; Google Fonts (Poppins, Instrument Serif)
+├── vite.config.js         # Code splitting, Cloudflare tunnel
+├── .oxlintrc.json         # Reglas: hooks, only-export-components
+├── CLAUDE.md              # Documentación de diseño (268 líneas)
+├── package.json
+├── scripts/
+│   └── optimizar-imagenes.mjs   # Genera WebP (hero, tarjeta, captura, objeto, modulo)
+├── public/
+│   ├── favicon.svg
+│   ├── fonts/             # Urbanist Variable (autohospedada), Garet Book/Heavy (autohospedada)
+│   └── img/               # JPG/PNG originales + WebP generados
+└── src/
+    ├── main.jsx           # createRoot, StrictMode, BrowserRouter
+    ├── App.jsx            # Rutas, layout común, scroll restoration, lazy loading
+    ├── index.css          # Tokens @theme, fuentes, scroll-reveal, keyframes
+    ├── data/
+    │   └── contenido.js   # TODO el contenido: servicios, planes, navegación, FAQs
+    ├── components/        # Primitivas reusables
+    │   ├── ui.jsx         # Seccion, Contenedor, Eyebrow, Titulo, Boton
+    │   ├── Navbar.jsx     # Barra fija, dos estados (transparente/blanca)
+    │   ├── Contacto.jsx   # Contexto + modal de contacto (reunión por WhatsApp)
+    │   ├── Reveal.jsx     # Scroll reveal (IntersectionObserver)
+    │   ├── Iconos.jsx     # SVGs en línea + mapa ICONOS
+    │   ├── tienda.jsx     # Utilidades de pricing + PasoPago
+    │   ├── formulario.jsx # Primitivas de formulario (CAMPO, Pastilla, Etiqueta, Casilla)
+    │   └── BotonWhatsApp.jsx  # Botón flotante de WhatsApp
+    ├── sections/          # Bloques de página
+    │   ├── Hero.jsx
+    │   ├── Servicios.jsx
+    │   ├── BusinessPanel.jsx
+    │   ├── PorQueElegirnos.jsx
+    │   ├── Nosotras.jsx
+    │   └── SiteFooter.jsx
+    └── pages/             # Rutas (lazy-loaded, excepto Home)
+        ├── Home.jsx
+        ├── Producto.jsx
+        ├── Tienda.jsx
+        ├── Checkout.jsx
+        ├── Demo.jsx
+        ├── PreguntasFrecuentes.jsx
+        ├── NosotrosPagina.jsx
+        └── Proximamente.jsx
+```
+
+## Arquitectura de rendimiento
+
+- **Code splitting por página**: `App.jsx` importa la home directamente y el resto
+  con `React.lazy`. Cada página es su propio chunk y solo se descarga al visitarla.
+- **Vendor chunk**: React y React Router van en un archivo separado
+  (`vite.config.js` → `manualChunks`), cacheable entre publicaciones.
+- **Fuentes precargadas**: Urbanist y Garet Book se `preload` en `index.html`.
+  Poppins e Instrument Serif se cargan de Google Fonts.
+- **Imágenes responsive**: `srcSet` + `sizes` en todos los `<img>`, WebP optimizados
+  con Sharp (`npm run imagenes`).
+
+## Accesibilidad
+
+- Foco visible en todo lo enfocable (`:focus-visible`).
+- `prefers-reduced-motion` respetado: se desactivan animaciones y el scroll-reveal
+  muestra contenido sin transición.
+- Modal de contacto con trampa de foco, Escape, `aria-modal`, `aria-labelledby`.
+- Tabs de pestañas ARIA completos en Navbar y Producto.
+- Texto alternativo en todas las imágenes; `aria-label` en iconos.

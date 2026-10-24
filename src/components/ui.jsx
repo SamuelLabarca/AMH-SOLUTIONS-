@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 
 /* ------------------------------------------------------------------
@@ -23,8 +24,13 @@ import { Link } from "react-router-dom";
 const TONOS = {
   blanco: "bg-white",
   tinte: "bg-sky-tint",
+  /* Gris claro neutro. Lo usa Servicios. */
+  piedra: "bg-piedra",
   navy: "bg-navy text-white",
   ink: "bg-ink text-white",
+  /* Negro puro. Es el telón de las fotos: cualquier azul de fondo
+     compite con el color de las imágenes y las apaga. Lo usa Servicios. */
+  negro: "bg-black text-white",
 };
 
 export function Seccion({
@@ -78,7 +84,7 @@ export function Contenedor({ className = "", children, ...props }) {
 export function Eyebrow({ children, claro = false, className = "" }) {
   return (
     <p
-      className={`text-xs font-semibold uppercase tracking-[0.18em] ${
+      className={`font-sans text-xs font-semibold uppercase tracking-[0.18em] ${
         claro ? "text-sky-light" : "text-sky"
       } ${className}`}
     >
@@ -88,7 +94,8 @@ export function Eyebrow({ children, claro = false, className = "" }) {
 }
 
 /* ---------------- TITULAR DE SECCIÓN ----------------
-   ⚠️ NEGRO, extrabold, GRANDE y a la IZQUIERDA (CLAUDE.md §5). Nunca
+   ⚠️ NEGRO, BOLD (700), GRANDE y a la IZQUIERDA. Era extrabold; Samuel
+   pidió todos los títulos en Poppins Bold, como el hero de la home. Nunca
    centrado, nunca en gris y nunca en el azul de acento: es la regla que
    más define el look y la más fácil de romper sin darse cuenta.
 
@@ -98,28 +105,14 @@ export function Titulo({ children, claro = false, className = "", as: Etiqueta =
   return (
     <Etiqueta
       className={`
-        text-balance font-extrabold leading-[1.1] tracking-[-0.02em]
-        text-[clamp(1.75rem,4vw,2.5rem)]
+        text-balance font-bold leading-[1.1] tracking-[-0.02em]
+        text-[clamp(1.5rem,4vw,2.5rem)]
         ${claro ? "text-white" : "text-black"}
         ${className}
       `}
     >
       {children}
     </Etiqueta>
-  );
-}
-
-/* Párrafo de entrada bajo el titular. Ancho limitado a propósito: más de
-   ~70 caracteres por línea y el ojo pierde el renglón al volver. */
-export function Entradilla({ children, claro = false, className = "" }) {
-  return (
-    <p
-      className={`max-w-[58ch] text-[clamp(1rem,1.3vw,1.125rem)] leading-[1.65] ${
-        claro ? "text-white/75" : "text-body"
-      } ${className}`}
-    >
-      {children}
-    </p>
   );
 }
 
@@ -136,9 +129,23 @@ const VARIANTES = {
     "bg-navy text-white hover:bg-steel-navy shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)]",
   acento:
     "bg-sky text-white hover:bg-sky-light shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)]",
+  /* El filo va como sombra interior y no como `border`: un borde suma
+     2px al alto y, al lado de la pastilla `acento`, se veía desigual. */
   contorno:
-    "border border-white/35 text-white hover:bg-white/10 hover:border-white/60",
+    "text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.35)] hover:bg-white/10 hover:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.6)]",
   suave: "bg-white text-navy hover:bg-cloud shadow-[var(--shadow-card)]",
+  /* Pastilla NEGRA con el texto blanco. Para fondos claros, donde el
+     negro es lo que más contrasta: ni el navy ni el azul de acento
+     paran el ojo igual sobre blanco.
+
+     El hover va a `ink` (navy muy oscuro) y no a un gris: aclarar un
+     negro lo ensucia, y desplazarlo hacia el azul de la marca se lee
+     como una respuesta y no como un desgaste. */
+  negro: "bg-black text-white hover:bg-ink shadow-[var(--shadow-card)]",
+  /* Pastilla BLANCA con el texto negro. La pareja de `acento` sobre
+     fondos oscuros: a diferencia de `suave`, la letra va en negro y no
+     en navy, para que las dos pastillas se lean igual de rotundas. */
+  blanco: "bg-white text-black hover:bg-cloud shadow-[var(--shadow-card)]",
 };
 
 export function Boton({
@@ -151,7 +158,7 @@ export function Boton({
 }) {
   const clases = `
     inline-flex items-center justify-center gap-2 rounded-full
-    px-6 py-3 text-sm font-semibold
+    px-8 py-3.5 text-center text-base font-bold leading-tight
     transition-[background-color,box-shadow,transform,border-color] duration-200
     hover:-translate-y-0.5 active:translate-y-0
     ${VARIANTES[variante]} ${className}
@@ -177,24 +184,5 @@ export function Boton({
     <button type="button" className={clases} {...props}>
       {children}
     </button>
-  );
-}
-
-/* ---------------- TARJETA ----------------
-   Fondo blanco, borde muy tenue y sombra en capas. El borde importa: sin
-   él, una tarjeta blanca sobre un fondo casi blanco solo se distingue por
-   la sombra, y en pantallas malas la sombra desaparece. */
-export function Tarjeta({ className = "", children, ...props }) {
-  return (
-    <div
-      className={`
-        rounded-3xl border border-mist/70 bg-white p-7
-        shadow-[var(--shadow-card)]
-        ${className}
-      `}
-      {...props}
-    >
-      {children}
-    </div>
   );
 }

@@ -1,0 +1,3 @@
+# Netlify: todas las rutas las resuelve React Router. Sin esto, recargar
+# en /tienda o /nosotros da 404 (no existe ese archivo en el servidor).
+/*    /index.html   200
