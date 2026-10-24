@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IconCheck } from "../../components/Iconos.jsx";
 import { PasoPago, dolares } from "../../components/tienda.jsx";
-import { ErrorApi } from "../../servicios/api.js";
-import { obtenerCuenta } from "../../servicios/portalPagos.js";
+import { ErrorApi, MODO_DEMO } from "../../servicios/api.js";
+import { obtenerCuenta, reportarPago } from "../../servicios/portalPagos.js";
 import { useSesion } from "./Sesion.jsx";
 import { Aviso, Pantalla } from "./piezas.jsx";
 
@@ -66,7 +66,11 @@ export default function MiCuenta() {
               </button>
             </div>
             <div className="mt-7">
-              <PasoPago orden={pagando} onReportado={() => setReportado(true)} />
+              <PasoPago
+                orden={pagando}
+                onReportado={() => setReportado(true)}
+                reportar={MODO_DEMO ? undefined : (metodo, datos) => enviarReporte(metodo, datos, pagando, sesionVencida)}
+              />
             </div>
           </>
         ) : (
@@ -86,12 +90,36 @@ export default function MiCuenta() {
   );
 }
 
+/* Envía el reporte a la API y traduce sus errores al mensaje que ve el
+   cliente (PasoPago muestra `error.message`). */
+async function enviarReporte(metodo, datos, orden, sesionVencida) {
+  try {
+    await reportarPago({
+      metodo,
+      referencia: String(datos.get("referencia")).trim(),
+      fecha: datos.get("fecha"),
+      monto: datos.get("monto"),
+      banco: datos.get("banco") ?? "",
+      suscripciones: orden.suscripciones,
+    });
+  } catch (e) {
+    if (e instanceof ErrorApi && e.estado === 401) sesionVencida();
+    const mensajes = {
+      "referencia-usada": "Esa referencia ya fue reportada. Si crees que es un error, escríbenos.",
+      "datos-invalidos": "Revisa la referencia, la fecha y el monto.",
+      "suscripcion-invalida": "No pudimos asociar el pago a tus suscripciones. Recarga la página.",
+    };
+    throw new Error(mensajes[e.codigo] ?? "No pudimos enviar tu reporte. Inténtalo de nuevo.");
+  }
+}
+
 /* ------------------------------------------------------------------
    EL DESGLOSE. Vienen marcadas las que hay que pagar (vencidas, por
    vencer o suspendidas); las activas se pueden marcar para adelantar
    la renovación.
 ------------------------------------------------------------------ */
 const ESTADOS = {
+  pendiente: { texto: "Pendiente de pago", clase: "bg-amarillo/35 text-ink" },
   activa: { texto: "Activa", clase: "bg-sky-tint text-sky" },
   "por-vencer": { texto: "Por vencer", clase: "bg-amarillo/35 text-ink" },
   vencida: { texto: "Vencida", clase: "bg-ink text-white" },

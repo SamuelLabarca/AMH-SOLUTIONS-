@@ -50,6 +50,8 @@ export default function Registro() {
       setError(
         mensajeDeError(e, {
           "cuenta-existente": "Ya hay una cuenta con ese correo o documento. Si es tuya, recupera tu contraseña.",
+          // La API además rechaza las contraseñas más comunes ("password1").
+          "datos-invalidos": "Revisa los datos. La contraseña no puede ser una de las más usadas.",
         }),
       );
       setCargando(false);

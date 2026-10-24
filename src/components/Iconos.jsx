@@ -307,6 +307,16 @@ export function IconCandado(props) {
   );
 }
 
+/* Pausa: el botón para detener el carrusel. Relleno, como IconPlay. */
+export function IconPausa(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <rect x="6" y="5" width="4" height="14" rx="1" />
+      <rect x="14" y="5" width="4" height="14" rx="1" />
+    </svg>
+  );
+}
+
 /* Mapa nombre -> componente, para que los datos de `contenido.js` puedan
    pedir un icono con una cadena sin importar JSX. */
 export const ICONOS = {

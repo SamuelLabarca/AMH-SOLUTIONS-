@@ -37,7 +37,12 @@ export default function Restablecer() {
       navegar(BASE_PORTAL, { replace: true, state: { aviso: "Tu contraseña se cambió. Entra con la nueva." } });
     } catch (e) {
       if (e.codigo === "token-invalido") setTokenInvalido(true);
-      else setError(mensajeDeError(e));
+      else
+        setError(
+          mensajeDeError(e, {
+            "contrasena-invalida": "La contraseña no es válida. Prueba con otra que no sea de las más usadas.",
+          }),
+        );
       setCargando(false);
     }
   }

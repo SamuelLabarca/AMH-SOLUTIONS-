@@ -29,20 +29,37 @@ export class ErrorApi extends Error {
   }
 }
 
-export async function pedir(ruta, { metodo = "GET", cuerpo, signal } = {}) {
+/* CSRF. Todo POST/DELETE lleva el token en la cabecera X-CSRFToken; sin
+   él, la API lo rechaza (403). Se pide a GET /auth/csrf la primera vez y
+   se guarda en memoria. Django lo cambia al entrar o registrarse, así
+   que si la API responde 403 se pide otro y se reintenta UNA vez. */
+let tokenCsrf = null;
+
+async function obtenerCsrf(renovar = false) {
+  if (!tokenCsrf || renovar) {
+    const r = await fetch(`${API_URL}/auth/csrf`, { credentials: "include" });
+    tokenCsrf = (await r.json()).csrf;
+  }
+  return tokenCsrf;
+}
+
+export async function pedir(ruta, { metodo = "GET", cuerpo, signal } = {}, reintento = false) {
+  const modifica = metodo !== "GET";
   const respuesta = await fetch(`${API_URL}${ruta}`, {
     method: metodo,
     credentials: "include",
     headers: {
       Accept: "application/json",
       ...(cuerpo ? { "Content-Type": "application/json" } : {}),
+      ...(modifica ? { "X-CSRFToken": await obtenerCsrf(reintento) } : {}),
     },
     body: cuerpo ? JSON.stringify(cuerpo) : undefined,
     signal,
   });
 
-  if (respuesta.status === 204) return null;
+  if (respuesta.status === 204 || respuesta.status === 202) return null;
   const datos = await respuesta.json().catch(() => null);
+  if (respuesta.status === 403 && modifica && !reintento) return pedir(ruta, { metodo, cuerpo, signal }, true);
   if (!respuesta.ok) throw new ErrorApi(respuesta.status, datos?.codigo, datos?.mensaje);
   return datos;
 }

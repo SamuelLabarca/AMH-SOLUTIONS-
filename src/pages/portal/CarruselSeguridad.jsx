@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ICONOS } from "../../components/Iconos.jsx";
+import { ICONOS, IconPausa, IconPlay } from "../../components/Iconos.jsx";
 import { SEGURIDAD_PORTAL } from "../../data/contenido.js";
 
 /* ==================================================================
@@ -9,52 +9,71 @@ import { SEGURIDAD_PORTAL } from "../../data/contenido.js";
    ilustración, un título, un texto y los puntos abajo. Cuenta qué
    hacemos para proteger la cuenta mientras el cliente escribe.
 
-   - Pasa solo cada 6 s, y se PARA al pasar el ratón o al enfocar un
-     punto: nadie quiere que el texto se le cambie mientras lo lee.
-   - Con `prefers-reduced-motion` no pasa solo; se cambia con los puntos.
-   - Las diapositivas están todas montadas, apiladas en la misma celda
-     de la rejilla: así la caja mide lo que la más alta y no salta al
-     cambiar. Las ocultas llevan `inert` para que el teclado y el lector
-     de pantalla no entren en ellas.
+   - Pasa SOLO cada 6 s, deslizándose de derecha a izquierda.
+   - Se para un momento al pasar el ratón o al enfocar algo dentro
+     (nadie quiere que el texto cambie mientras lo lee), y del todo con
+     el botón de pausa: WCAG 2.2.2 lo exige en lo que se mueve solo.
+   - Tocar un punto reinicia la cuenta de 6 s.
+
+   ⚠️ `prefers-reduced-motion` NO lo detiene. Esa preferencia pide
+   quitar el MOVIMIENTO, no que el contenido no cambie nunca (Windows
+   la activa con "Efectos de animación" apagado, y con eso el carrusel
+   se quedaba quieto en la primera). Con ella se quita el deslizamiento
+   (`motion-safe:`) y queda solo el fundido.
+
+   Las diapositivas están todas montadas, apiladas en la misma celda de
+   la rejilla: la caja mide lo que la más alta y no salta al cambiar.
+   Las ocultas llevan `inert` para que el teclado y el lector de
+   pantalla no entren en ellas.
 ================================================================== */
-const INTERVALO = 6000;
+const INTERVALO_CARRUSEL = 6000;
 
 export default function CarruselSeguridad() {
   const [actual, setActual] = useState(0);
-  const [pausado, setPausado] = useState(false);
+  const [encima, setEncima] = useState(false);
+  const [detenido, setDetenido] = useState(false);
   const total = SEGURIDAD_PORTAL.length;
 
+  // Un temporizador por diapositiva: al cambiar `actual` (sola o con un
+  // punto) se arma uno nuevo, y por eso un clic reinicia la cuenta.
   useEffect(() => {
-    if (pausado || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-    const id = setInterval(() => setActual((i) => (i + 1) % total), INTERVALO);
-    return () => clearInterval(id);
-  }, [pausado, total]);
+    if (encima || detenido) return;
+    const id = setTimeout(() => setActual((i) => (i + 1) % total), INTERVALO_CARRUSEL);
+    return () => clearTimeout(id);
+  }, [actual, encima, detenido, total]);
 
   return (
     <section
       aria-roledescription="carrusel"
       aria-label="Cómo protegemos tu cuenta"
-      onMouseEnter={() => setPausado(true)}
-      onMouseLeave={() => setPausado(false)}
-      onFocus={() => setPausado(true)}
-      onBlur={() => setPausado(false)}
-      className="flex h-full flex-col items-center justify-center text-center"
+      onMouseEnter={() => setEncima(true)}
+      onMouseLeave={() => setEncima(false)}
+      onFocus={() => setEncima(true)}
+      onBlur={() => setEncima(false)}
+      className="flex h-full flex-col items-center justify-center overflow-hidden text-center"
     >
       <div className="grid">
         {SEGURIDAD_PORTAL.map(({ icono, titulo, texto }, i) => {
           const Icono = ICONOS[icono];
-          const visible = i === actual;
+          // La que entra viene de la derecha; la que sale se va a la
+          // izquierda. Se mide en círculo para que el salto de la última
+          // a la primera también vaya hacia la izquierda.
+          const distancia = (i - actual + total) % total;
+          const posicion =
+            distancia === 0
+              ? "opacity-100"
+              : distancia === total - 1
+                ? "opacity-0 motion-safe:-translate-x-16"
+                : "opacity-0 motion-safe:translate-x-16";
           return (
             <div
               key={titulo}
               role="group"
               aria-roledescription="diapositiva"
               aria-label={`${i + 1} de ${total}`}
-              aria-hidden={!visible}
-              inert={!visible}
-              className={`flex flex-col items-center transition-opacity duration-500 [grid-area:1/1] ${
-                visible ? "opacity-100" : "opacity-0"
-              }`}
+              aria-hidden={i !== actual}
+              inert={i !== actual}
+              className={`flex flex-col items-center transition-[opacity,translate] duration-700 ease-out [grid-area:1/1] ${posicion}`}
             >
               <Ilustracion Icono={Icono} />
               <h2 className="mt-9 text-xl font-semibold tracking-[-0.01em] text-black">{titulo}</h2>
@@ -64,20 +83,30 @@ export default function CarruselSeguridad() {
         })}
       </div>
 
-      {/* Los puntos: el activo se estira en pastilla, como en Zoho. */}
-      <div className="mt-9 flex items-center gap-2">
-        {SEGURIDAD_PORTAL.map(({ titulo }, i) => (
-          <button
-            key={titulo}
-            type="button"
-            onClick={() => setActual(i)}
-            aria-label={`Ver: ${titulo}`}
-            aria-current={i === actual ? "true" : undefined}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === actual ? "w-7 bg-sky" : "w-2 bg-mist hover:bg-steel/50"
-            }`}
-          />
-        ))}
+      <div className="mt-9 flex items-center gap-4">
+        {/* Los puntos: el activo se estira en pastilla, como en Zoho. */}
+        <div className="flex items-center gap-2">
+          {SEGURIDAD_PORTAL.map(({ titulo }, i) => (
+            <button
+              key={titulo}
+              type="button"
+              onClick={() => setActual(i)}
+              aria-label={`Ver: ${titulo}`}
+              aria-current={i === actual ? "true" : undefined}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === actual ? "w-7 bg-sky" : "w-2 bg-mist hover:bg-steel/50"
+              }`}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setDetenido((d) => !d)}
+          aria-label={detenido ? "Reanudar el carrusel" : "Pausar el carrusel"}
+          className="grid h-7 w-7 place-items-center rounded-full text-steel transition-colors hover:bg-cloud hover:text-black"
+        >
+          {detenido ? <IconPlay className="h-3.5 w-3.5" /> : <IconPausa className="h-3.5 w-3.5" />}
+        </button>
       </div>
     </section>
   );

@@ -34,6 +34,20 @@ export async function obtenerCuenta({ signal } = {}) {
   return pedir("/portal/cuenta", { signal });
 }
 
+/* POST /portal/pagos — reporta un pago. Queda PENDIENTE hasta que el
+   equipo lo verifica en el banco y lo aprueba; aprobarlo es lo que
+   renueva las suscripciones.
+     201 → { id, estado: "pendiente" }
+     409 → { codigo: "referencia-usada" }
+     400 → { codigo: "suscripcion-invalida" | "datos-invalidos" }
+   En el modo demostración no existe: el reporte sale por WhatsApp. */
+export async function reportarPago({ metodo, referencia, fecha, monto, banco, suscripciones }) {
+  return pedir("/portal/pagos", {
+    metodo: "POST",
+    cuerpo: { metodo, referencia, fecha, monto: String(monto).replace(",", "."), banco, suscripciones },
+  });
+}
+
 /* "v", " 12.345.678 " → "V-12345678". Así se guarda en la base de
    datos: sin puntos, espacios ni guiones sueltos. */
 export function normalizarDocumento(letra, numero) {
