@@ -121,7 +121,7 @@ export function PasoPago({ orden, onReportado }) {
         <legend className="mb-2.5 text-sm font-semibold text-black">
           ¿Cómo vas a pagar? <span className="text-sky">*</span>
         </legend>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-3 gap-2">
           {METODOS_PAGO.map((m) => (
             <Pastilla
               key={m.id}

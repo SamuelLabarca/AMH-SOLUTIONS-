@@ -534,15 +534,6 @@ export const METODOS_PAGO = [
       { etiqueta: "Titular", valor: null },
     ],
   },
-  {
-    id: "binance",
-    nombre: "Binance Pay",
-    moneda: "USD",
-    datos: [
-      { etiqueta: "Pay ID", valor: null },
-      { etiqueta: "Correo", valor: null },
-    ],
-  },
 ];
 
 /* Página /demo: solicitud de demostración de My Business Panel.

@@ -11,7 +11,7 @@ import Home from "./pages/Home.jsx";
    la primera carga no arrastra la tienda, el checkout ni la FAQ. */
 const Producto = lazy(() => import("./pages/Producto.jsx"));
 const PreguntasFrecuentes = lazy(() => import("./pages/PreguntasFrecuentes.jsx"));
-const Proximamente = lazy(() => import("./pages/Proximamente.jsx"));
+const PortalPagos = lazy(() => import("./pages/PortalPagos.jsx"));
 const NosotrosPagina = lazy(() => import("./pages/NosotrosPagina.jsx"));
 const Demo = lazy(() => import("./pages/Demo.jsx"));
 const Tienda = lazy(() => import("./pages/Tienda.jsx"));
@@ -58,18 +58,7 @@ export default function App() {
             <Route path="/tienda/checkout" element={<Checkout />} />
             <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
             <Route path="/nosotros" element={<NosotrosPagina />} />
-            {/* Provisional hasta que exista el portal (Proximamente.jsx). */}
-            <Route
-              path="/portal-de-pagos"
-              element={
-                <Proximamente
-                  eyebrow="Portal de pagos"
-                  titulo="Muy pronto podrás renovar desde aquí"
-                  texto="Estamos terminando el portal donde buscarás tu cuenta con tu cédula o RIF y pagarás tus renovaciones. Mientras tanto, escríbenos y te ayudamos con tu pago."
-                  mensaje="Hola, soy cliente de My Business Panel y quiero pagar mi renovación."
-                />
-              }
-            />
+            <Route path="/portal-de-pagos" element={<PortalPagos />} />
             {/* Cualquier ruta desconocida cae en la home, para no dejar una
                 pantalla en blanco ante un enlace roto. */}
             <Route path="*" element={<Home />} />

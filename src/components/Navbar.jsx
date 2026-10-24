@@ -149,8 +149,7 @@ export default function Navbar() {
             El único botón relleno de la barra. Sobre el hero va blanco
             (sobre oscuro destaca lo claro) y, con la barra ya blanca,
             pasa al azul de acento: es el "Portal de Pagos" de Airtek.
-            Hasta que el portal exista lleva a su página "muy pronto"
-            (antes abría el formulario de mensaje, que ya no existe). */}
+            Lleva al portal, donde el cliente consulta con su cédula. */}
         <Link
           to="/portal-de-pagos"
           className={`
