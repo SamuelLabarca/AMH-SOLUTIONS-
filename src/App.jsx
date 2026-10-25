@@ -11,7 +11,7 @@ import Home from "./pages/Home.jsx";
    la primera carga no arrastra la tienda, el checkout ni la FAQ. */
 const Producto = lazy(() => import("./pages/Producto.jsx"));
 const PreguntasFrecuentes = lazy(() => import("./pages/PreguntasFrecuentes.jsx"));
-const Proximamente = lazy(() => import("./pages/Proximamente.jsx"));
+const PortalPagos = lazy(() => import("./pages/portal/PortalPagos.jsx"));
 const NosotrosPagina = lazy(() => import("./pages/NosotrosPagina.jsx"));
 const Demo = lazy(() => import("./pages/Demo.jsx"));
 const Tienda = lazy(() => import("./pages/Tienda.jsx"));
@@ -27,6 +27,8 @@ const Checkout = lazy(() => import("./pages/Checkout.jsx"));
    para que cualquier página pueda abrirlo.
 ================================================================== */
 export default function App() {
+  const { pathname } = useLocation();
+
   return (
     <ProveedorContacto>
       <AlCambiarDeRuta />
@@ -58,25 +60,19 @@ export default function App() {
             <Route path="/tienda/checkout" element={<Checkout />} />
             <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
             <Route path="/nosotros" element={<NosotrosPagina />} />
-            {/* Provisional hasta que exista el portal (Proximamente.jsx). */}
-            <Route
-              path="/portal-de-pagos"
-              element={
-                <Proximamente
-                  eyebrow="Portal de pagos"
-                  titulo="Muy pronto podrás renovar desde aquí"
-                  texto="Estamos terminando el portal donde buscarás tu cuenta con tu cédula o RIF y pagarás tus renovaciones. Mientras tanto, escríbenos y te ayudamos con tu pago."
-                  mensaje="Hola, soy cliente de My Business Panel y quiero pagar mi renovación."
-                />
-              }
-            />
+            {/* Con `/*`: el portal tiene sus propias subrutas (registro,
+                recuperar…) y las resuelve dentro de PortalPagos.jsx. */}
+            <Route path="/portal-de-pagos/*" element={<PortalPagos />} />
             {/* Cualquier ruta desconocida cae en la home, para no dejar una
                 pantalla en blanco ante un enlace roto. */}
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>
       </main>
-      <SiteFooter />
+      {/* El portal de pagos no lleva el pie: es un trámite, como el
+          inicio de sesión de Zoho, y solo deja el copyright bajo la
+          tarjeta (lo pone su propio marco, portal/piezas.jsx). */}
+      {!pathname.startsWith("/portal-de-pagos") && <SiteFooter />}
       {/* Flotante: acompaña al usuario en todas las páginas. */}
       <BotonWhatsApp />
     </ProveedorContacto>

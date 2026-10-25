@@ -534,15 +534,6 @@ export const METODOS_PAGO = [
       { etiqueta: "Titular", valor: null },
     ],
   },
-  {
-    id: "binance",
-    nombre: "Binance Pay",
-    moneda: "USD",
-    datos: [
-      { etiqueta: "Pay ID", valor: null },
-      { etiqueta: "Correo", valor: null },
-    ],
-  },
 ];
 
 /* Página /demo: solicitud de demostración de My Business Panel.
@@ -809,3 +800,39 @@ export const NOSOTROS = {
     boton: "Solicitar demo",
   },
 };
+
+/* Carrusel de seguridad del portal de pagos (la mitad derecha de la
+   pantalla de entrar, como en Zoho).
+
+   ⚠️ CADA DIAPOSITIVA ES UNA PROMESA. Describen requisitos que el
+   backend tiene que cumplir (ver servicios/autenticacion.js). Si alguno
+   no está implementado el día que el portal salga a producción, se
+   quita de aquí: anunciar una protección que no existe es peor que no
+   mencionarla. */
+export const SEGURIDAD_PORTAL = [
+  {
+    icono: "escudo",
+    titulo: "Tus datos, solo tuyos",
+    texto: "Cada cuenta ve únicamente sus propias suscripciones. Nadie puede consultar los planes ni los pagos de otra empresa.",
+  },
+  {
+    icono: "llave",
+    titulo: "Contraseñas que nadie puede leer",
+    texto: "Guardamos tu contraseña transformada con un algoritmo de una sola vía. Ni siquiera nuestro equipo puede verla.",
+  },
+  {
+    icono: "correo",
+    titulo: "Recuperación solo por tu correo",
+    texto: "El enlace para cambiar la contraseña llega a tu correo, se usa una sola vez y vence a los 30 minutos.",
+  },
+  {
+    icono: "reloj",
+    titulo: "Freno a los intentos de acceso",
+    texto: "Tras varios intentos fallidos bloqueamos el acceso por unos minutos, para que nadie adivine tu contraseña probando.",
+  },
+  {
+    icono: "candado",
+    titulo: "Conexión cifrada de punta a punta",
+    texto: "Todo viaja por HTTPS y tu sesión vive en una cookie protegida que ningún script de la página puede leer.",
+  },
+];

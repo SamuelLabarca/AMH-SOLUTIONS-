@@ -29,6 +29,12 @@ describe("App — layout y rutas", () => {
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
   });
 
+  it("el portal de pagos no lleva el pie del sitio", async () => {
+    renderApp("/portal-de-pagos");
+    expect(await screen.findByText(/Todos los derechos reservados/, {}, { timeout: 3000 })).toBeInTheDocument();
+    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
+  });
+
   it("la home carga de inmediato (no es lazy)", async () => {
     renderApp("/");
     expect(await screen.findByRole("heading", { name: /Evoluciona a una/i })).toBeInTheDocument();

@@ -98,21 +98,38 @@ export function Pasos({ actual, claro = false }) {
    `orden`: { concepto, monto (número o null), cliente: { nombre,
    documento, correo } }. Lo arma quien lo usa (checkout o portal).
 
-   ⚠️ Sin backend todavía: el reporte sale por WhatsApp ya escrito
-   (`reportarPago`). El día que haya API, ese es el único sitio que
-   cambia; la pantalla se queda igual.
+   DOS SALIDAS para el reporte:
+   - Con `reportar` (el portal, con API): se envía a la API y queda
+     pendiente de verificar. `reportar(metodoId, datos)` es asíncrona y
+     lanza un error con mensaje para el cliente si algo falla.
+   - Sin él (el checkout, o el portal en modo demostración): sale por
+     WhatsApp ya escrito (`reportarPago`).
 ------------------------------------------------------------------ */
-export function PasoPago({ orden, onReportado }) {
+export function PasoPago({ orden, onReportado, reportar }) {
   const [metodoId, setMetodoId] = useState(METODOS_PAGO[0].id);
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState(null);
   const metodo = METODOS_PAGO.find((m) => m.id === metodoId);
   const enBolivares = metodo.moneda === "Bs";
 
-  function alEnviar(evento) {
+  async function alEnviar(evento) {
     evento.preventDefault();
     const datos = new FormData(evento.currentTarget);
-    const enlace = reportarPago(orden, metodo, datos);
-    window.open(enlace, "_blank", "noopener,noreferrer");
-    onReportado?.(enlace);
+    if (!reportar) {
+      const enlace = reportarPago(orden, metodo, datos);
+      window.open(enlace, "_blank", "noopener,noreferrer");
+      onReportado?.(enlace);
+      return;
+    }
+    setError(null);
+    setEnviando(true);
+    try {
+      await reportar(metodo.id, datos);
+      onReportado?.(null);
+    } catch (e) {
+      setError(e.message);
+      setEnviando(false);
+    }
   }
 
   return (
@@ -121,7 +138,7 @@ export function PasoPago({ orden, onReportado }) {
         <legend className="mb-2.5 text-sm font-semibold text-black">
           ¿Cómo vas a pagar? <span className="text-sky">*</span>
         </legend>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-3 gap-2">
           {METODOS_PAGO.map((m) => (
             <Pastilla
               key={m.id}
@@ -184,16 +201,27 @@ export function PasoPago({ orden, onReportado }) {
         </Etiqueta>
       </div>
 
+      {error && (
+        <p role="alert" className="mt-6 rounded-xl bg-ink/[0.04] px-4 py-3 text-sm text-ink ring-1 ring-ink/15">
+          {error}
+        </p>
+      )}
+
       <button
         type="submit"
-        className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-sky px-8 py-4 text-base font-bold text-white transition-colors hover:bg-sky-light"
+        disabled={enviando}
+        className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-sky px-8 py-4 text-base font-bold text-white transition-colors hover:bg-sky-light disabled:cursor-wait disabled:opacity-80"
       >
-        Reportar mi pago
+        {enviando ? "Enviando…" : "Reportar mi pago"}
       </button>
-      <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-steel">
-        <IconWhatsApp className="h-3.5 w-3.5" />
-        Se abre WhatsApp con tu reporte escrito. Adjunta ahí el capture del pago.
-      </p>
+      {reportar ? (
+        <p className="mt-3 text-center text-xs text-steel">Lo verificamos en el banco y tu suscripción se activa sola.</p>
+      ) : (
+        <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-steel">
+          <IconWhatsApp className="h-3.5 w-3.5" />
+          Se abre WhatsApp con tu reporte escrito. Adjunta ahí el capture del pago.
+        </p>
+      )}
     </form>
   );
 }

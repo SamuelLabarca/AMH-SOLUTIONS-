@@ -253,6 +253,70 @@ export function IconTelefono(props) {
   );
 }
 
+/* Los de abajo son del carrusel de seguridad del portal de pagos.
+   Trazos de Lucide, licencia ISC. */
+
+/* Escudo con palomita: "tus datos, solo tuyos". */
+export function IconEscudo(props) {
+  return (
+    <Base {...props}>
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+      <path d="M9 12l2 2 4-4" />
+    </Base>
+  );
+}
+
+/* Llave: la contraseña guardada con hash. */
+export function IconLlave(props) {
+  return (
+    <Base {...props}>
+      <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" />
+      <circle cx="16.5" cy="7.5" r="0.75" fill="currentColor" />
+    </Base>
+  );
+}
+
+/* Sobre: recuperación solo por correo. */
+export function IconCorreo(props) {
+  return (
+    <Base {...props}>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </Base>
+  );
+}
+
+/* Reloj de arena: freno a los intentos repetidos. */
+export function IconReloj(props) {
+  return (
+    <Base {...props}>
+      <path d="M5 22h14M5 2h14" />
+      <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
+      <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
+    </Base>
+  );
+}
+
+/* Candado: conexión cifrada. */
+export function IconCandado(props) {
+  return (
+    <Base {...props}>
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </Base>
+  );
+}
+
+/* Pausa: el botón para detener el carrusel. Relleno, como IconPlay. */
+export function IconPausa(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <rect x="6" y="5" width="4" height="14" rx="1" />
+      <rect x="14" y="5" width="4" height="14" rx="1" />
+    </svg>
+  );
+}
+
 /* Mapa nombre -> componente, para que los datos de `contenido.js` puedan
    pedir un icono con una cadena sin importar JSX. */
 export const ICONOS = {
@@ -269,4 +333,9 @@ export const ICONOS = {
   tienda: IconTienda,
   edificio: IconEdificio,
   corporativo: IconCorporativo,
+  escudo: IconEscudo,
+  llave: IconLlave,
+  correo: IconCorreo,
+  reloj: IconReloj,
+  candado: IconCandado,
 };
