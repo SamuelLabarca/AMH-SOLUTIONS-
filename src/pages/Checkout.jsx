@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Contenedor } from "../components/ui.jsx";
-import { TIENDA, WHATSAPP } from "../data/contenido.js";
+import { WHATSAPP } from "../data/contenido.js";
+import { useProductoTienda } from "../hooks/useTienda.js";
 import { CAMPO, Etiqueta, Pastilla, Casilla } from "../components/formulario.jsx";
 import { IconCheck, IconWhatsApp } from "../components/Iconos.jsx";
 import { Pasos, PasoPago, ahorro, desglose, dolares } from "../components/tienda.jsx";
@@ -24,7 +25,8 @@ const DOCUMENTOS = ["V", "E", "J", "G", "P"];
 
 export default function Checkout() {
   const [params] = useSearchParams();
-  const producto = TIENDA.productos[0];
+  // Los textos salen de contenido.js; los precios y el IVA, de la API.
+  const { producto, iva } = useProductoTienda();
   const { pagos } = producto;
   const pago = pagos.find((p) => p.id === params.get("pago")) ?? pagos.find((p) => p.destacado) ?? pagos[0];
 
@@ -46,7 +48,7 @@ export default function Checkout() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  const cuentas = desglose(pago.precio, TIENDA.iva);
+  const cuentas = desglose(pago.precio, iva);
 
   return (
     <section className="bg-cloud">
@@ -135,10 +137,10 @@ export default function Checkout() {
             </div>
 
             <dl className="mt-6 space-y-2 border-t border-mist pt-5 text-[0.9375rem]">
-              {cuentas && TIENDA.iva ? (
+              {cuentas && iva ? (
                 <>
                   <Linea etiqueta="Subtotal" valor={dolares(cuentas.subtotal)} />
-                  <Linea etiqueta={`IVA (${TIENDA.iva}%)`} valor={dolares(cuentas.impuesto)} />
+                  <Linea etiqueta={`IVA (${iva}%)`} valor={dolares(cuentas.impuesto)} />
                 </>
               ) : null}
               <div className="flex items-baseline justify-between pt-2">

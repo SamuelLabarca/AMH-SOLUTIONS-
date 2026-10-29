@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { METODOS_PAGO, WHATSAPP } from "../data/contenido.js";
+import { WHATSAPP } from "../data/contenido.js";
+import { useMetodosPago, useTasaBcv } from "../hooks/useTienda.js";
 import { CAMPO, Etiqueta, Pastilla } from "./formulario.jsx";
 import { IconCheck, IconWhatsApp } from "./Iconos.jsx";
 
@@ -19,6 +20,13 @@ export function dolares(n) {
     minimumFractionDigits: redondo ? 0 : 2,
     maximumFractionDigits: 2,
   })}`;
+}
+
+/* Bolívares con el formato de aquí, siempre con dos decimales:
+   "Bs 28.017,50". `conSimbolo` en false da solo el número (para la tasa). */
+export function bolivares(n, conSimbolo = true) {
+  const numero = n.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return conSimbolo ? `Bs ${numero}` : numero;
 }
 
 /* Lo que se ahorra un pago largo frente a pagar mes a mes, en %. Null
@@ -106,11 +114,16 @@ export function Pasos({ actual, claro = false }) {
      WhatsApp ya escrito (`reportarPago`).
 ------------------------------------------------------------------ */
 export function PasoPago({ orden, onReportado, reportar }) {
-  const [metodoId, setMetodoId] = useState(METODOS_PAGO[0].id);
+  // Los métodos y sus datos salen de la API (se editan en el admin).
+  const metodos = useMetodosPago();
+  const tasa = useTasaBcv();
+  const [metodoId, setMetodoId] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState(null);
-  const metodo = METODOS_PAGO.find((m) => m.id === metodoId);
+  // Si el elegido desaparece (lo apagaron en el admin), vuelve al primero.
+  const metodo = metodos.find((m) => m.id === metodoId) ?? metodos[0];
   const enBolivares = metodo.moneda === "Bs";
+  const montoBs = enBolivares && tasa && orden.monto ? orden.monto * tasa.bs_por_usd : null;
 
   async function alEnviar(evento) {
     evento.preventDefault();
@@ -139,12 +152,12 @@ export function PasoPago({ orden, onReportado, reportar }) {
           ¿Cómo vas a pagar? <span className="text-sky">*</span>
         </legend>
         <div className="grid grid-cols-3 gap-2">
-          {METODOS_PAGO.map((m) => (
+          {metodos.map((m) => (
             <Pastilla
               key={m.id}
               nombre="metodo"
               valor={m.id}
-              checked={m.id === metodoId}
+              checked={m.id === metodo.id}
               onChange={() => setMetodoId(m.id)}
             >
               {m.nombre}
@@ -158,7 +171,13 @@ export function PasoPago({ orden, onReportado, reportar }) {
       <div className="mt-6 rounded-2xl bg-cloud p-5 ring-1 ring-mist">
         <p className="font-sans text-sm font-medium text-black">
           Paga por {metodo.nombre}
-          {orden.monto ? (
+          {montoBs ? (
+            <>
+              {" "}
+              <span className="font-semibold text-sky">{bolivares(montoBs)}</span> ({dolares(orden.monto)} a la tasa BCV
+              de Bs {bolivares(tasa.bs_por_usd, false)})
+            </>
+          ) : orden.monto ? (
             <>
               {" "}
               el monto de <span className="font-semibold text-sky">{dolares(orden.monto)}</span>
