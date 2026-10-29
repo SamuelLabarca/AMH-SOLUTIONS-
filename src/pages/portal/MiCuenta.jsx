@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { IconCheck } from "../../components/Iconos.jsx";
 import { PasoPago, dolares } from "../../components/tienda.jsx";
 import { ErrorApi, MODO_DEMO } from "../../servicios/api.js";
-import { obtenerCuenta, reportarPago } from "../../servicios/portalPagos.js";
+import { obtenerCuenta, reportarFormulario } from "../../servicios/portalPagos.js";
 import { useSesion } from "./Sesion.jsx";
 import { Aviso, Pantalla } from "./piezas.jsx";
 
@@ -90,26 +90,13 @@ export default function MiCuenta() {
   );
 }
 
-/* Envía el reporte a la API y traduce sus errores al mensaje que ve el
-   cliente (PasoPago muestra `error.message`). */
+/* Envía el reporte a la API (PasoPago muestra el mensaje si falla). */
 async function enviarReporte(metodo, datos, orden, sesionVencida) {
   try {
-    await reportarPago({
-      metodo,
-      referencia: String(datos.get("referencia")).trim(),
-      fecha: datos.get("fecha"),
-      monto: datos.get("monto"),
-      banco: datos.get("banco") ?? "",
-      suscripciones: orden.suscripciones,
-    });
+    await reportarFormulario(metodo, datos, orden.suscripciones);
   } catch (e) {
-    if (e instanceof ErrorApi && e.estado === 401) sesionVencida();
-    const mensajes = {
-      "referencia-usada": "Esa referencia ya fue reportada. Si crees que es un error, escríbenos.",
-      "datos-invalidos": "Revisa la referencia, la fecha y el monto.",
-      "suscripcion-invalida": "No pudimos asociar el pago a tus suscripciones. Recarga la página.",
-    };
-    throw new Error(mensajes[e.codigo] ?? "No pudimos enviar tu reporte. Inténtalo de nuevo.");
+    if (e.sinSesion) sesionVencida();
+    throw e;
   }
 }
 

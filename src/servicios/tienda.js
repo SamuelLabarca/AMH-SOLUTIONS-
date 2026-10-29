@@ -27,6 +27,15 @@ function unaVez(ruta) {
   return cache.get(ruta);
 }
 
+/* POST /tienda/ordenes — la compra (requiere sesión).
+   Solo se manda QUÉ se compra: el precio lo pone el servidor.
+     201/200 → { orden: { id, total, impuesto, iva, suscripcion, … } }
+     400 → { codigo: "opcion-no-disponible" } */
+export async function crearOrden({ producto, opcion }) {
+  const { orden } = await pedir("/tienda/ordenes", { metodo: "POST", cuerpo: { producto, opcion } });
+  return orden;
+}
+
 export const obtenerCatalogo = () => unaVez("/tienda/catalogo");
 export const obtenerMetodos = () => unaVez("/pagos/metodos");
 export const obtenerTasa = () => unaVez("/pagos/tasa");
