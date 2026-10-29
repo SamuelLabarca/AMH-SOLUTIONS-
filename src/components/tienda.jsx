@@ -3,47 +3,18 @@ import { WHATSAPP } from "../data/contenido.js";
 import { useMetodosPago, useTasaBcv } from "../hooks/useTienda.js";
 import { CAMPO, Etiqueta, Pastilla } from "./formulario.jsx";
 import { IconCheck, IconWhatsApp } from "./Iconos.jsx";
+import { bolivares, dolares } from "../utils/dinero.js";
 
 /* ------------------------------------------------------------------
    PIEZAS DE LA TIENDA
 
-   Las comparten la tienda (/tienda), el checkout (/tienda/checkout) y,
-   más adelante, el portal de pagos. Sobre todo <PasoPago>: el cobro es
-   la MISMA pantalla compre alguien por primera vez o renueve.
+   Las comparten la tienda (/tienda), el checkout (/tienda/checkout) y
+   el portal de pagos. Sobre todo <PasoPago>: el cobro es la MISMA
+   pantalla compre alguien por primera vez o renueve.
+
+   Aquí solo hay componentes. Los cálculos y formatos de dinero viven en
+   utils/dinero.js.
 ------------------------------------------------------------------ */
-
-/* Dólares con el formato de aquí: punto de miles y coma decimal
-   ($1.234,50). Sin decimales si el número es redondo. */
-export function dolares(n) {
-  const redondo = Number.isInteger(n);
-  return `$${n.toLocaleString("es-VE", {
-    minimumFractionDigits: redondo ? 0 : 2,
-    maximumFractionDigits: 2,
-  })}`;
-}
-
-/* Bolívares con el formato de aquí, siempre con dos decimales:
-   "Bs 28.017,50". `conSimbolo` en false da solo el número (para la tasa). */
-export function bolivares(n, conSimbolo = true) {
-  const numero = n.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return conSimbolo ? `Bs ${numero}` : numero;
-}
-
-/* Lo que se ahorra un pago largo frente a pagar mes a mes, en %. Null
-   si falta algún precio o si es el propio mensual. */
-export function ahorro(pago, pagos) {
-  const mensual = pagos.find((p) => p.meses === 1);
-  if (!pago.precio || !mensual?.precio || pago.meses === 1) return null;
-  const pct = Math.round((1 - pago.precio / (mensual.precio * pago.meses)) * 100);
-  return pct > 0 ? pct : null;
-}
-
-/* El total con el IVA, si está definido. Null si no hay precio. */
-export function desglose(precio, iva) {
-  if (!precio) return null;
-  const impuesto = iva ? Math.round(precio * iva) / 100 : 0;
-  return { subtotal: precio, impuesto, total: precio + impuesto };
-}
 
 /* ---------------- LOS PASOS ----------------
    El "1 Elegir plan — 2 Tus datos — 3 Pago" de QuickBooks. Los pasos

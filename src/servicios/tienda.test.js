@@ -1,5 +1,5 @@
 import { TIENDA } from "../data/contenido.js";
-import { bolivares } from "../components/tienda.jsx";
+import { bolivares } from "../utils/dinero.js";
 import { aplicarPrecios } from "./tienda.js";
 
 const local = TIENDA.productos[0];

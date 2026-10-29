@@ -1,13 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import * as auth from "../../servicios/autenticacion.js";
+import * as auth from "../servicios/autenticacion.js";
 
 /* ==================================================================
-   SESIÓN DEL PORTAL
+   SESIÓN
 
-   Un contexto con el usuario actual, compartido por todas las
-   pantallas del portal. Vive SOLO dentro de /portal-de-pagos: el resto
-   de la web no necesita saber quién eres, y así no se consulta la
-   sesión en cada visita a la home.
+   Un contexto con el usuario actual. Lo usan el portal de pagos y el
+   checkout (la misma cuenta, la misma cookie). Cada uno lo monta solo
+   en su página: el resto de la web no necesita saber quién eres, y así
+   no se consulta la sesión en cada visita a la home.
 
    `usuario`: undefined mientras se comprueba, null sin sesión, o el
    objeto del usuario. Distinguir undefined de null evita que la

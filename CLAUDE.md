@@ -249,9 +249,32 @@ src/pages/Home.jsx                 El ORDEN de las secciones de la home
 src/pages/Producto.jsx             Producto + planes
 src/pages/NosotrosPagina.jsx       /nosotros (sin personas, por seguridad)
 src/pages/PreguntasFrecuentes.jsx  /preguntas-frecuentes
+src/pages/Tienda.jsx, Checkout.jsx /tienda y /tienda/checkout
+src/pages/checkout/                Piezas del checkout (datos, paso "Tu cuenta")
+src/pages/portal/                  /portal-de-pagos: entrar, registro,
+                                   recuperación, cuenta y pago
 src/sections/                      Hero, Nosotros, Servicios,
                                    LlamadaContacto, SiteFooter
+src/sesion/                        Sesión del usuario y traducción de errores
+                                   de la API (portal y checkout)
+src/servicios/                     ÚNICA puerta a la API (api.js hace el fetch)
+src/hooks/useTienda.js             Catálogo, métodos de cobro y tasa (de la API)
+src/utils/dinero.js                Formato y cálculo de precios (sin React)
 ```
+
+### Las capas y sus reglas
+
+El backend vive en otro repositorio (`AMH-Backend-WEB`, Django). Este solo
+le habla por HTTP, a través de `src/servicios/`.
+
+| Capa | Carpeta | Regla |
+|---|---|---|
+| Pantallas | `src/pages/` | Una pantalla **no importa de otra**. Lo que comparten dos pantallas sale a su propia carpeta (`src/sesion/`, `src/components/`) |
+| Piezas visuales | `src/components/` | Solo componentes. Nada de cálculos ni de `fetch` |
+| Estado | `src/hooks/`, `src/sesion/` | Piden los datos a `servicios/`, nunca con `fetch` directo |
+| Acceso a la API | `src/servicios/` | El ÚNICO sitio que sabe que existe una API. Si cambia el backend, solo se toca aquí |
+| Utilidades | `src/utils/` | Funciones puras: sin React, sin API |
+| Textos | `src/data/contenido.js` | Contenido de marketing, sin lógica. Los precios y los datos de cobro NO: vienen de la API |
 
 ## Rendimiento
 

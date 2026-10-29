@@ -14,7 +14,7 @@ import {
   VENTAJAS,
   PANEL,
 } from "../data/contenido.js";
-import { dolares, ahorro, desglose } from "../components/tienda.jsx";
+import { dolares, ahorro, desglose } from "../utils/dinero.js";
 
 /* ------------------------------------------------------------------
    PRUEBAS DE DATOS — smoke test que garantiza que contenido.js exporta

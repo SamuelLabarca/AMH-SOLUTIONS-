@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { ProveedorSesion } from "../portal/Sesion.jsx";
+import { ProveedorSesion } from "../../sesion/Sesion.jsx";
 import { reiniciarDemo } from "../../servicios/autenticacion.js";
 import { crearOrden } from "../../servicios/tienda.js";
 import { ErrorApi } from "../../servicios/api.js";

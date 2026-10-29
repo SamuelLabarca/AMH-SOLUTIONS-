@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IconCheck } from "../../components/Iconos.jsx";
-import { PasoPago, dolares } from "../../components/tienda.jsx";
+import { PasoPago } from "../../components/tienda.jsx";
+import { dolares } from "../../utils/dinero.js";
 import { ErrorApi, MODO_DEMO } from "../../servicios/api.js";
 import { obtenerCuenta, reportarFormulario } from "../../servicios/portalPagos.js";
-import { useSesion } from "./Sesion.jsx";
+import { useSesion } from "../../sesion/Sesion.jsx";
 import { Aviso, Pantalla } from "./piezas.jsx";
 
 /* ==================================================================

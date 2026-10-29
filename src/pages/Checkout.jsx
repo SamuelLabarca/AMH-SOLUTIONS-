@@ -4,10 +4,11 @@ import { Contenedor } from "../components/ui.jsx";
 import { WHATSAPP } from "../data/contenido.js";
 import { useProductoTienda } from "../hooks/useTienda.js";
 import { IconCheck, IconWhatsApp } from "../components/Iconos.jsx";
-import { Pasos, PasoPago, ahorro, desglose, dolares } from "../components/tienda.jsx";
+import { Pasos, PasoPago } from "../components/tienda.jsx";
+import { ahorro, desglose, dolares } from "../utils/dinero.js";
 import { MODO_DEMO } from "../servicios/api.js";
 import { reportarFormulario } from "../servicios/portalPagos.js";
-import { ProveedorSesion } from "./portal/Sesion.jsx";
+import { ProveedorSesion } from "../sesion/Sesion.jsx";
 import FormularioDatos from "./checkout/FormularioDatos.jsx";
 import PasoCuenta from "./checkout/PasoCuenta.jsx";
 

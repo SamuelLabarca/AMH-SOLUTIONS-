@@ -4,7 +4,8 @@ import Reveal from "../components/Reveal.jsx";
 import { TIENDA, MODULOS } from "../data/contenido.js";
 import { useProductoTienda } from "../hooks/useTienda.js";
 import { ICONOS, IconCheck, IconFlecha } from "../components/Iconos.jsx";
-import { Pasos, ahorro, dolares } from "../components/tienda.jsx";
+import { Pasos } from "../components/tienda.jsx";
+import { ahorro, dolares } from "../utils/dinero.js";
 
 /* ==================================================================
    PÁGINA: TIENDA  (/tienda)

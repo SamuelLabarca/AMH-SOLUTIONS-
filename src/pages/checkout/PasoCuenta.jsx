@@ -4,8 +4,8 @@ import { CAMPO, Etiqueta } from "../../components/formulario.jsx";
 import { validarContrasena } from "../../servicios/autenticacion.js";
 import { normalizarDocumento } from "../../servicios/portalPagos.js";
 import { crearOrden } from "../../servicios/tienda.js";
-import { useSesion } from "../portal/Sesion.jsx";
-import { mensajeDeError } from "../portal/rutas.js";
+import { useSesion } from "../../sesion/Sesion.jsx";
+import { mensajeDeError } from "../../sesion/errores.js";
 import FormularioDatos from "./FormularioDatos.jsx";
 
 /* ==================================================================

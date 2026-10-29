@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { restablecerContrasena, validarContrasena } from "../../servicios/autenticacion.js";
 import { Acciones, Aviso, CampoFlotante, MostrarContrasena, Pantalla } from "./piezas.jsx";
-import { BASE_PORTAL, mensajeDeError } from "./rutas.js";
+import { BASE_PORTAL } from "./rutas.js";
+import { mensajeDeError } from "../../sesion/errores.js";
 import CarruselSeguridad from "./CarruselSeguridad.jsx";
 
 /* ==================================================================
