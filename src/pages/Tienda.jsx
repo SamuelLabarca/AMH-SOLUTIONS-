@@ -2,8 +2,10 @@ import { Link } from "react-router-dom";
 import { Contenedor, Eyebrow } from "../components/ui.jsx";
 import Reveal from "../components/Reveal.jsx";
 import { TIENDA, MODULOS } from "../data/contenido.js";
+import { useProductoTienda } from "../hooks/useTienda.js";
 import { ICONOS, IconCheck, IconFlecha } from "../components/Iconos.jsx";
-import { Pasos, ahorro, dolares } from "../components/tienda.jsx";
+import { Pasos } from "../components/tienda.jsx";
+import { ahorro, dolares } from "../utils/dinero.js";
 
 /* ==================================================================
    PÁGINA: TIENDA  (/tienda)
@@ -23,8 +25,9 @@ import { Pasos, ahorro, dolares } from "../components/tienda.jsx";
    Con más de uno, aquí irá antes el catálogo.
 ================================================================== */
 export default function Tienda() {
-  const { eyebrow, titulo, texto, ventajas, productos, imagen, alt } = TIENDA;
-  const producto = productos[0];
+  const { eyebrow, titulo, texto, ventajas, imagen, alt } = TIENDA;
+  // Los textos salen de contenido.js; los precios, de la API.
+  const { producto } = useProductoTienda();
 
   return (
     <>

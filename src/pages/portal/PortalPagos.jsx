@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { ProveedorSesion, useSesion } from "./Sesion.jsx";
+import { ProveedorSesion, useSesion } from "../../sesion/Sesion.jsx";
 import IniciarSesion from "./IniciarSesion.jsx";
 import MiCuenta from "./MiCuenta.jsx";
 import Recuperar from "./Recuperar.jsx";

@@ -2,10 +2,11 @@ import { useState } from "react";
 import { IconCheck } from "../../components/Iconos.jsx";
 import { validarContrasena } from "../../servicios/autenticacion.js";
 import { normalizarDocumento } from "../../servicios/portalPagos.js";
-import { useSesion } from "./Sesion.jsx";
+import { useSesion } from "../../sesion/Sesion.jsx";
 import CarruselSeguridad from "./CarruselSeguridad.jsx";
 import { Acciones, Aviso, CampoFlotante, MostrarContrasena, Pantalla, SelectorFlotante } from "./piezas.jsx";
-import { BASE_PORTAL, mensajeDeError } from "./rutas.js";
+import { BASE_PORTAL } from "./rutas.js";
+import { mensajeDeError } from "../../sesion/errores.js";
 
 /* ==================================================================
    REGISTRO

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { MODO_DEMO } from "../../servicios/api.js";
-import { useSesion } from "./Sesion.jsx";
+import { useSesion } from "../../sesion/Sesion.jsx";
 import CarruselSeguridad from "./CarruselSeguridad.jsx";
 import { Acciones, Aviso, CampoFlotante, EnlaceTexto, MostrarContrasena, Pantalla } from "./piezas.jsx";
-import { BASE_PORTAL, mensajeDeError } from "./rutas.js";
+import { BASE_PORTAL } from "./rutas.js";
+import { mensajeDeError } from "../../sesion/errores.js";
 
 /* ==================================================================
    ENTRAR AL PORTAL

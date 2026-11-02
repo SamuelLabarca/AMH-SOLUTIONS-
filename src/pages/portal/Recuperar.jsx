@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { solicitarRecuperacion } from "../../servicios/autenticacion.js";
 import { Acciones, Aviso, CampoFlotante, EnlaceTexto, Pantalla } from "./piezas.jsx";
 import CarruselSeguridad from "./CarruselSeguridad.jsx";
-import { BASE_PORTAL, mensajeDeError } from "./rutas.js";
+import { BASE_PORTAL } from "./rutas.js";
+import { mensajeDeError } from "../../sesion/errores.js";
 
 /* ==================================================================
    RECUPERAR LA CONTRASEÑA (pedir el enlace)
