@@ -143,6 +143,10 @@ describe("WHATSAPP y ATENCION", () => {
   it("ATENCION tiene teléfono", () => {
     expect(ATENCION.telefono).toMatch(/\+/);
   });
+
+  it("el WhatsApp es el mismo número de atención al cliente", () => {
+    expect(WHATSAPP.numero).toBe(ATENCION.telefono.replace(/\D/g, ""));
+  });
 });
 
 describe("TARJETAS_HERO", () => {
