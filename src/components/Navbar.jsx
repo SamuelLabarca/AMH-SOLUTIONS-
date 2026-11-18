@@ -88,13 +88,14 @@ export default function Navbar() {
 
             Mayúsculas con el tracking muy abierto: a este tamaño es lo
             que lo hace leer como marca y no como un título cualquiera. */}
-        <Link
-          to="/"
-          className={`shrink-0 text-base font-black uppercase tracking-[0.14em] transition-colors sm:text-lg ${
-            solida ? "text-ink hover:text-sky" : "text-white hover:text-white/75"
-          }`}
-        >
-          AMH Solutions
+        <Link to="/" className="shrink-0">
+          <img
+            src="/img/logo_blanco.svg"
+            alt="AMH Solutions"
+            className={`h-8 w-auto max-w-[160px] sm:h-10 sm:max-w-[200px] object-contain transition-all duration-300 ${
+              solida ? "brightness-0" : ""
+            }`}
+          />
         </Link>
 
         {/* ---------------- ENLACES, REPARTIDOS ----------------
