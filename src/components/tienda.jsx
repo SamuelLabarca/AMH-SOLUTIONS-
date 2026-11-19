@@ -1,41 +1,20 @@
 import { useState } from "react";
-import { METODOS_PAGO, WHATSAPP } from "../data/contenido.js";
+import { WHATSAPP } from "../data/contenido.js";
+import { useMetodosPago, useTasaBcv } from "../hooks/useTienda.js";
 import { CAMPO, Etiqueta, Pastilla } from "./formulario.jsx";
 import { IconCheck, IconWhatsApp } from "./Iconos.jsx";
+import { bolivares, dolares } from "../utils/dinero.js";
 
 /* ------------------------------------------------------------------
    PIEZAS DE LA TIENDA
 
-   Las comparten la tienda (/tienda), el checkout (/tienda/checkout) y,
-   más adelante, el portal de pagos. Sobre todo <PasoPago>: el cobro es
-   la MISMA pantalla compre alguien por primera vez o renueve.
+   Las comparten la tienda (/tienda), el checkout (/tienda/checkout) y
+   el portal de pagos. Sobre todo <PasoPago>: el cobro es la MISMA
+   pantalla compre alguien por primera vez o renueve.
+
+   Aquí solo hay componentes. Los cálculos y formatos de dinero viven en
+   utils/dinero.js.
 ------------------------------------------------------------------ */
-
-/* Dólares con el formato de aquí: punto de miles y coma decimal
-   ($1.234,50). Sin decimales si el número es redondo. */
-export function dolares(n) {
-  const redondo = Number.isInteger(n);
-  return `$${n.toLocaleString("es-VE", {
-    minimumFractionDigits: redondo ? 0 : 2,
-    maximumFractionDigits: 2,
-  })}`;
-}
-
-/* Lo que se ahorra un pago largo frente a pagar mes a mes, en %. Null
-   si falta algún precio o si es el propio mensual. */
-export function ahorro(pago, pagos) {
-  const mensual = pagos.find((p) => p.meses === 1);
-  if (!pago.precio || !mensual?.precio || pago.meses === 1) return null;
-  const pct = Math.round((1 - pago.precio / (mensual.precio * pago.meses)) * 100);
-  return pct > 0 ? pct : null;
-}
-
-/* El total con el IVA, si está definido. Null si no hay precio. */
-export function desglose(precio, iva) {
-  if (!precio) return null;
-  const impuesto = iva ? Math.round(precio * iva) / 100 : 0;
-  return { subtotal: precio, impuesto, total: precio + impuesto };
-}
 
 /* ---------------- LOS PASOS ----------------
    El "1 Elegir plan — 2 Tus datos — 3 Pago" de QuickBooks. Los pasos
@@ -106,11 +85,16 @@ export function Pasos({ actual, claro = false }) {
      WhatsApp ya escrito (`reportarPago`).
 ------------------------------------------------------------------ */
 export function PasoPago({ orden, onReportado, reportar }) {
-  const [metodoId, setMetodoId] = useState(METODOS_PAGO[0].id);
+  // Los métodos y sus datos salen de la API (se editan en el admin).
+  const metodos = useMetodosPago();
+  const tasa = useTasaBcv();
+  const [metodoId, setMetodoId] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState(null);
-  const metodo = METODOS_PAGO.find((m) => m.id === metodoId);
+  // Si el elegido desaparece (lo apagaron en el admin), vuelve al primero.
+  const metodo = metodos.find((m) => m.id === metodoId) ?? metodos[0];
   const enBolivares = metodo.moneda === "Bs";
+  const montoBs = enBolivares && tasa && orden.monto ? orden.monto * tasa.bs_por_usd : null;
 
   async function alEnviar(evento) {
     evento.preventDefault();
@@ -139,12 +123,12 @@ export function PasoPago({ orden, onReportado, reportar }) {
           ¿Cómo vas a pagar? <span className="text-sky">*</span>
         </legend>
         <div className="grid grid-cols-3 gap-2">
-          {METODOS_PAGO.map((m) => (
+          {metodos.map((m) => (
             <Pastilla
               key={m.id}
               nombre="metodo"
               valor={m.id}
-              checked={m.id === metodoId}
+              checked={m.id === metodo.id}
               onChange={() => setMetodoId(m.id)}
             >
               {m.nombre}
@@ -158,7 +142,13 @@ export function PasoPago({ orden, onReportado, reportar }) {
       <div className="mt-6 rounded-2xl bg-cloud p-5 ring-1 ring-mist">
         <p className="font-sans text-sm font-medium text-black">
           Paga por {metodo.nombre}
-          {orden.monto ? (
+          {montoBs ? (
+            <>
+              {" "}
+              <span className="font-semibold text-sky">{bolivares(montoBs)}</span> ({dolares(orden.monto)} a la tasa BCV
+              de Bs {bolivares(tasa.bs_por_usd, false)})
+            </>
+          ) : orden.monto ? (
             <>
               {" "}
               el monto de <span className="font-semibold text-sky">{dolares(orden.monto)}</span>

@@ -574,15 +574,15 @@ export const DEMO = {
   tamanos: ["Emprendedor", "Pyme", "Grandes empresas"],
 };
 
-/* WhatsApp del botón flotante. `numero` va en formato internacional sin
-   "+" ni espacios (es lo que pide wa.me); es el mismo del pie.
-   `mensaje` es el texto que aparece ya escrito al abrir el chat. */
 /* Teléfono de atención al cliente: lo usan el pie y la página de
    preguntas frecuentes. */
 export const ATENCION = { telefono: "+58 424 6706389" };
 
+/* WhatsApp del botón flotante. `numero` va en formato internacional sin
+   "+" ni espacios (es lo que pide wa.me) y es el mismo de ATENCION.
+   `mensaje` es el texto que aparece ya escrito al abrir el chat. */
 export const WHATSAPP = {
-  numero: "50671046276",
+  numero: "584246706389",
   mensaje: "Hola, vengo de la web de AMH Solutions y quiero información sobre My Business Panel.",
 };
 

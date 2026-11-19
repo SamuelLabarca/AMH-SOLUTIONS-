@@ -62,7 +62,7 @@ AMH-frontend/
     │   ├── Contacto.jsx   # Contexto + modal de contacto (reunión por WhatsApp)
     │   ├── Reveal.jsx     # Scroll reveal (IntersectionObserver)
     │   ├── Iconos.jsx     # SVGs en línea + mapa ICONOS
-    │   ├── tienda.jsx     # Utilidades de pricing + PasoPago
+    │   ├── tienda.jsx     # Pasos y PasoPago (solo componentes)
     │   ├── formulario.jsx # Primitivas de formulario (CAMPO, Pastilla, Etiqueta, Casilla)
     │   └── BotonWhatsApp.jsx  # Botón flotante de WhatsApp
     ├── sections/          # Bloques de página
@@ -72,16 +72,33 @@ AMH-frontend/
     │   ├── PorQueElegirnos.jsx
     │   ├── Nosotras.jsx
     │   └── SiteFooter.jsx
+    ├── sesion/            # Sesión del usuario + traducción de errores (portal y checkout)
+    ├── servicios/         # ÚNICA puerta a la API del backend (api.js hace el fetch)
+    ├── hooks/             # useTienda: catálogo, métodos de cobro y tasa
+    ├── utils/
+    │   └── dinero.js      # Formato y cálculo de precios (funciones puras)
     └── pages/             # Rutas (lazy-loaded, excepto Home)
         ├── Home.jsx
         ├── Producto.jsx
         ├── Tienda.jsx
         ├── Checkout.jsx
+        ├── checkout/      # Piezas del checkout
+        ├── portal/        # /portal-de-pagos
         ├── Demo.jsx
         ├── PreguntasFrecuentes.jsx
         ├── NosotrosPagina.jsx
         └── Proximamente.jsx
 ```
+
+### Reglas de capas
+
+- **Una pantalla no importa de otra.** Lo compartido sale a `sesion/`, `components/` o `utils/`.
+- **Solo `servicios/` habla con la API.** Componentes, hooks y pantallas le piden los datos a él.
+- **`components/` solo tiene componentes**; los cálculos van en `utils/`.
+
+El backend (Django) vive en el repositorio `AMH-Backend-WEB`. En local:
+`npm run dev:api` usa la API en `http://localhost:8000`; sin ella, el portal
+y la tienda funcionan en modo demostración.
 
 ## Arquitectura de rendimiento
 

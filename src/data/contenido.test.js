@@ -14,7 +14,7 @@ import {
   VENTAJAS,
   PANEL,
 } from "../data/contenido.js";
-import { dolares, ahorro, desglose } from "../components/tienda.jsx";
+import { dolares, ahorro, desglose } from "../utils/dinero.js";
 
 /* ------------------------------------------------------------------
    PRUEBAS DE DATOS — smoke test que garantiza que contenido.js exporta
@@ -142,6 +142,10 @@ describe("WHATSAPP y ATENCION", () => {
 
   it("ATENCION tiene teléfono", () => {
     expect(ATENCION.telefono).toMatch(/\+/);
+  });
+
+  it("el WhatsApp es el mismo número de atención al cliente", () => {
+    expect(WHATSAPP.numero).toBe(ATENCION.telefono.replace(/\D/g, ""));
   });
 });
 
