@@ -42,9 +42,11 @@ export async function obtenerCuenta({ signal } = {}) {
      400 → { codigo: "suscripcion-invalida" | "datos-invalidos" }
    En el modo demostración no existe: el reporte sale por WhatsApp. */
 export async function reportarPago({ metodo, referencia, fecha, monto, banco, suscripciones }) {
+  const str = String(monto).trim();
+  const montoLimpio = str.includes(",") ? str.replace(/\./g, "").replace(",", ".") : str;
   return pedir("/portal/pagos", {
     metodo: "POST",
-    cuerpo: { metodo, referencia, fecha, monto: String(monto).replace(",", "."), banco, suscripciones },
+    cuerpo: { metodo, referencia, fecha, monto: montoLimpio, banco, suscripciones },
   });
 }
 

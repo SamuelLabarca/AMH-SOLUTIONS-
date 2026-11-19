@@ -13,6 +13,7 @@ import {
   TARJETAS_HERO,
   VENTAJAS,
   PANEL,
+  BANCOS_VENEZUELA,
 } from "../data/contenido.js";
 import { dolares, ahorro, desglose } from "../utils/dinero.js";
 
@@ -225,6 +226,21 @@ describe("desglose", () => {
       subtotal: 200,
       impuesto: 0,
       total: 200,
+    });
+  });
+});
+
+describe("BANCOS_VENEZUELA", () => {
+  it("contiene los principales bancos de Venezuela", () => {
+    expect(BANCOS_VENEZUELA.length).toBeGreaterThan(15);
+    expect(BANCOS_VENEZUELA).toContain("0134 - Banesco");
+    expect(BANCOS_VENEZUELA).toContain("0102 - Banco de Venezuela");
+    expect(BANCOS_VENEZUELA).toContain("0105 - Banco Mercantil");
+  });
+
+  it("ningún banco supera los 60 caracteres requeridos por el backend", () => {
+    BANCOS_VENEZUELA.forEach((banco) => {
+      expect(banco.length).toBeLessThanOrEqual(60);
     });
   });
 });

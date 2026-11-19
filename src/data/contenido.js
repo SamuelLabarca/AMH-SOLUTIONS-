@@ -536,6 +536,36 @@ export const METODOS_PAGO = [
   },
 ];
 
+/* Bancos de Venezuela (códigos oficiales SUDEBAN).
+   Lista predefinida para seleccionar el banco de origen en pagos en bolívares. */
+export const BANCOS_VENEZUELA = [
+  "0102 - Banco de Venezuela",
+  "0104 - Venezolano de Crédito",
+  "0105 - Banco Mercantil",
+  "0108 - Banco Provincial (BBVA)",
+  "0114 - Bancaribe",
+  "0115 - Banco Exterior",
+  "0128 - Banco Caroní",
+  "0134 - Banesco",
+  "0137 - Banco Sofitasa",
+  "0138 - Banco Plaza",
+  "0146 - Bangente",
+  "0151 - BFC Banco Fondo Común",
+  "0156 - 100% Banco",
+  "0157 - DelSur Banco Universal",
+  "0163 - Banco del Tesoro",
+  "0166 - Banco Agrícola de Venezuela",
+  "0168 - Bancrecer",
+  "0169 - Mi Banco",
+  "0171 - Banco Activo",
+  "0172 - Bancamiga",
+  "0174 - Banplus",
+  "0175 - Banco Bicentenario",
+  "0177 - BANFANB",
+  "0178 - N58 Banco Digital",
+  "0191 - Banco Nacional de Crédito (BNC)",
+];
+
 /* Página /demo: solicitud de demostración de My Business Panel.
 
    Patrón de la página de demo de Zoho Commerce: a la izquierda se vende

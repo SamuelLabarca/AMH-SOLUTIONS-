@@ -60,3 +60,10 @@ export const SUSCRIPCIONES_DEMO = {
     },
   ],
 };
+
+/* Tasa oficial BCV de demostración (Bs. por USD).
+   Se usa en el modo demostración (sin backend) o como fallback si la API no responde. */
+export const TASA_DEMO = {
+  fecha: "2026-11-19",
+  bs_por_usd: 917.7751,
+};

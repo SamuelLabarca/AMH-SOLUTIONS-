@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { WHATSAPP } from "../data/contenido.js";
+import { BANCOS_VENEZUELA, WHATSAPP } from "../data/contenido.js";
 import { useMetodosPago, useTasaBcv } from "../hooks/useTienda.js";
 import { CAMPO, Etiqueta, Pastilla } from "./formulario.jsx";
 import { IconCheck, IconWhatsApp } from "./Iconos.jsx";
@@ -95,6 +95,15 @@ export function PasoPago({ orden, onReportado, reportar }) {
   const metodo = metodos.find((m) => m.id === metodoId) ?? metodos[0];
   const enBolivares = metodo.moneda === "Bs";
   const montoBs = enBolivares && tasa && orden.monto ? orden.monto * tasa.bs_por_usd : null;
+  // En Bs solo se rellena si hay tasa: sin ella, los dólares NO valen como
+  // bolívares. Si no se puede rellenar, el campo queda editable.
+  const montoSugerido = enBolivares
+    ? montoBs
+      ? bolivares(montoBs, false)
+      : ""
+    : orden.monto
+      ? bolivares(orden.monto, false)
+      : "";
 
   async function alEnviar(evento) {
     evento.preventDefault();
@@ -183,11 +192,38 @@ export function PasoPago({ orden, onReportado, reportar }) {
         </Etiqueta>
         {enBolivares && (
           <Etiqueta texto="Banco desde el que pagaste" requerido>
-            <input name="banco" required placeholder="Ej. Banesco" className={CAMPO} />
+            <select
+              name="banco"
+              required
+              defaultValue=""
+              className={`${CAMPO} cursor-pointer`}
+            >
+              <option value="" disabled>
+                Selecciona tu banco
+              </option>
+              {BANCOS_VENEZUELA.map((banco) => (
+                <option key={banco} value={banco}>
+                  {banco}
+                </option>
+              ))}
+            </select>
           </Etiqueta>
         )}
         <Etiqueta texto={`Monto pagado (${enBolivares ? "Bs." : "$"})`} requerido>
-          <input name="monto" required inputMode="decimal" placeholder="0,00" className={CAMPO} />
+          <input
+            key={`${metodo.id}-${montoSugerido}`}
+            name="monto"
+            required
+            readOnly={Boolean(montoSugerido)}
+            inputMode="decimal"
+            defaultValue={montoSugerido}
+            placeholder="0,00"
+            className={
+              montoSugerido
+                ? `${CAMPO} cursor-default bg-mist/20 font-semibold text-black focus:border-mist focus:bg-mist/20 focus:ring-0`
+                : CAMPO
+            }
+          />
         </Etiqueta>
       </div>
 

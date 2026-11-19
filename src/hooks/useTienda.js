@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { METODOS_PAGO, TIENDA } from "../data/contenido.js";
+import { TASA_DEMO } from "../data/portalDemo.js";
 import { MODO_DEMO, aplicarPrecios, obtenerCatalogo, obtenerMetodos, obtenerTasa } from "../servicios/tienda.js";
 
 /* ------------------------------------------------------------------
@@ -53,9 +54,12 @@ export function useMetodosPago() {
   return metodos;
 }
 
-/* La tasa BCV vigente: { fecha, bs_por_usd } o null si no hay. */
+/* La tasa BCV vigente: { fecha, bs_por_usd } o null si no hay.
+   En modo demostración (sin backend) usa la tasa de referencia TASA_DEMO.
+   ⚠️ Con backend NO hay respaldo: si la API falla se queda en null. Una
+   tasa fija le pediría al cliente real un monto en Bs equivocado. */
 export function useTasaBcv() {
-  const [tasa, setTasa] = useState(null);
+  const [tasa, setTasa] = useState(MODO_DEMO ? TASA_DEMO : null);
 
   useEffect(() => {
     if (MODO_DEMO) return;
